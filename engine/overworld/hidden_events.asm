@@ -1,3 +1,81 @@
+; Pokemon Yellow Complete: use common field HMs directly from the overworld.
+; Called while the player presses A, before normal hidden-event/sign handling.
+; Carry set = a field move was used and the A press was consumed.
+TryContextFieldMove::
+	predef GetTileAndCoordsInFrontOfPlayer
+
+; CUT: A while facing a cut tree/grass, provided the Cascade Badge is owned
+; and any party Pokemon knows Cut.
+	ld a, [wObtainedBadges]
+	bit BIT_CASCADEBADGE, a
+	jr z, .trySurf
+	ld a, [wCurMapTileset]
+	and a ; OVERWORLD
+	jr z, .cutOverworld
+	cp GYM
+	jr nz, .trySurf
+	ld a, [wTileInFrontOfPlayer]
+	cp $50 ; gym cut tree
+	jr nz, .trySurf
+	jr .findCutUser
+.cutOverworld
+	ld a, [wTileInFrontOfPlayer]
+	cp $3d ; cut tree
+	jr z, .findCutUser
+	cp $52 ; grass
+	jr nz, .trySurf
+.findCutUser
+	ld b, CUT
+	farcall FindPartyMonWithFieldMove
+	jr nc, .trySurf
+	predef UsedCut
+	ld a, [wActionResultOrTookBattleTurn]
+	and a
+	jr z, .trySurf
+	scf
+	ret
+
+; SURF: A while facing valid water, provided the Soul Badge is owned
+; and any party Pokemon knows Surf.
+.trySurf
+	ld a, [wObtainedBadges]
+	bit BIT_SOULBADGE, a
+	jr z, .nothing
+	ld b, SURF
+	farcall FindPartyMonWithFieldMove
+	jr nc, .nothing
+	lda_coord 8, 9
+	ld [wTilePlayerStandingOn], a
+	farcall IsSurfingAllowed
+	ld hl, wStatusFlags1
+	bit BIT_SURF_ALLOWED, [hl]
+	res BIT_SURF_ALLOWED, [hl]
+	jr z, .nothing
+	ld a, [wCurPartySpecies]
+	cp STARTER_PIKACHU
+	jr z, .surfingPikachu
+	ld a, 1
+	jr .startSurf
+.surfingPikachu
+	ld a, 2
+.startSurf
+	ld [wd472], a
+	ld a, SURFBOARD
+	ld [wCurItem], a
+	ld [wPseudoItemID], a
+	call UseItem
+	ld a, [wActionResultOrTookBattleTurn]
+	and a
+	jr z, .surfFailed
+	scf
+	ret
+.surfFailed
+	xor a
+	ld [wd472], a
+.nothing
+	and a
+	ret
+
 ; if a hidden event was found, stores $00 in [hDidntFindAnyHiddenEvent], else stores $ff
 CheckForHiddenEvent::
 	ld hl, hItemAlreadyFound
