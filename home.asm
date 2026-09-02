@@ -9,6 +9,7 @@ SECTION "High Home", ROM0
 INCLUDE "home/lcd.asm"
 INCLUDE "home/clear_sprites.asm"
 INCLUDE "home/copy.asm"
+INCLUDE "home/count_set_bits.asm"
 
 
 SECTION "Home", ROM0
@@ -42,7 +43,6 @@ INCLUDE "home/reset_player_sprite.asm"
 INCLUDE "home/fade_audio.asm"
 INCLUDE "home/text_script.asm"
 INCLUDE "home/start_menu.asm"
-INCLUDE "home/count_set_bits.asm"
 INCLUDE "home/inventory.asm"
 INCLUDE "home/list_menu.asm"
 INCLUDE "home/names.asm"
