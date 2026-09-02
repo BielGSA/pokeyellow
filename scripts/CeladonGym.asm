@@ -35,6 +35,15 @@ CeladonGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_CELADONGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_CELADONGYM_END_BATTLE
 	dw_const CeladonGymErikaPostBattleScript,       SCRIPT_CELADONGYM_ERIKA_POST_BATTLE
+        dw_const CeladonGymErikaRematchPostBattle, SCRIPT_CELADONGYM_ERIKA_REMATCH_POST_BATTLE
+
+CeladonGymErikaRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, CeladonGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp CeladonGymResetScripts
 
 CeladonGymErikaPostBattleScript:
 	ld a, [wIsInBattle]
@@ -113,6 +122,32 @@ CeladonGymErikaText:
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; ERIKA rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, .ReceivedRainbowBadgeText
+        ld de, .ReceivedRainbowBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $4
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_CELADONGYM_ERIKA_REMATCH_POST_BATTLE
+        ld [wCeladonGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .done
@@ -136,6 +171,10 @@ CeladonGymErikaText:
 	ld [wCurMapScript], a
 .done
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _CeladonGymErikaRematchText
+        text_end
 
 .PreBattleText:
 	text_far _CeladonGymErikaPreBattleText

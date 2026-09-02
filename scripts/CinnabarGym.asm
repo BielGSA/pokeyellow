@@ -51,6 +51,7 @@ CinnabarGym_ScriptPointers:
 	dw_const CinnabarGymGetOpponentTextScript,  SCRIPT_CINNABARGYM_GET_OPPONENT_TEXT
 	dw_const CinnabarGymOpenGateScript,         SCRIPT_CINNABARGYM_OPEN_GATE
 	dw_const CinnabarGymBlainePostBattleScript, SCRIPT_CINNABARGYM_BLAINE_POST_BATTLE
+        dw_const CinnabarGymBlaineRematchPostBattle, SCRIPT_CINNABARGYM_BLAINE_REMATCH_POST_BATTLE
 
 CinnabarGymDefaultScript:
 	ld a, [wOpponentAfterWrongAnswer]
@@ -195,6 +196,14 @@ CinnabarGymScript_75041:
 	call UpdateCinnabarGymGateTileBlocks
 	ret
 
+CinnabarGymBlaineRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, CinnabarGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp CinnabarGymResetScripts
+
 CinnabarGymBlainePostBattleScript:
 	call CinnabarGymScript_753e9
 	ld a, [wIsInBattle]
@@ -279,6 +288,32 @@ CinnabarGymBlaineText:
 	call DisableWaitingAfterTextDisplay
 	jp TextScriptEnd
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; BLAINE rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, .ReceivedVolcanoBadgeText
+        ld de, .ReceivedVolcanoBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $7
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_CINNABARGYM_BLAINE_REMATCH_POST_BATTLE
+        ld [wCinnabarGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jp TextScriptEnd
@@ -291,6 +326,10 @@ CinnabarGymBlaineText:
 	ld a, $7
 	ld [wGymLeaderNo], a
 	jp CinnabarGymStartBattleScript
+
+.RematchText:
+        text_far _CinnabarGymBlaineRematchText
+        text_end
 
 .PreBattleText:
 	text_far _CinnabarGymBlainePreBattleText

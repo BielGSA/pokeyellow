@@ -184,3 +184,19 @@ _PewterGymGuyText::
 	cont "BROCK's ground-"
 	cont "type #MON."
 	done
+
+_PewterGymBrockRematchText::
+        text "So, you've"
+        line "become the"
+        cont "CHAMPION!"
+
+        para "I've trained hard"
+        line "since our last"
+        cont "battle."
+
+        para "This time, I'll"
+        line "show you my true"
+        cont "rock-hard power!"
+
+        para "Let's battle!"
+        done

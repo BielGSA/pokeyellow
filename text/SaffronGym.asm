@@ -236,3 +236,13 @@ _SaffronGymYoungster4AfterBattleText::
 	line "used telepathy to"
 	cont "read your mind!"
 	done
+
+_SaffronGymSabrinaRematchText::
+    text "I knew you would"
+    line "return, CHAMPION."
+
+    para "My powers have"
+    line "grown stronger."
+
+    para "Let us battle."
+    done

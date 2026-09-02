@@ -6,10 +6,10 @@ Route16WildMons:
 	db 24, DODUO
 	db 24, RATTATA
 	db 26, DODUO
-	db 23, SPEAROW
 	db 24, FEAROW
 	db 25, RATICATE
-	db 26, RATICATE
+	db 27, EEVEE
+	db 30, SNORLAX
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

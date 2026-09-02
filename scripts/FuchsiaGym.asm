@@ -37,6 +37,15 @@ FuchsiaGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_FUCHSIAGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_FUCHSIAGYM_END_BATTLE
 	dw_const FuchsiaGymKogaPostBattleScript,        SCRIPT_FUCHSIAGYM_KOGA_POST_BATTLE
+        dw_const FuchsiaGymKogaRematchPostBattle, SCRIPT_FUCHSIAGYM_KOGA_REMATCH_POST_BATTLE
+
+FuchsiaGymKogaRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, FuchsiaGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp FuchsiaGymResetScripts
 
 FuchsiaGymKogaPostBattleScript:
 	ld a, [wIsInBattle]
@@ -113,6 +122,32 @@ FuchsiaGymKogaText:
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; KOGA rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, .ReceivedSoulBadgeText
+        ld de, .ReceivedSoulBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $5
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_FUCHSIAGYM_KOGA_REMATCH_POST_BATTLE
+        ld [wFuchsiaGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .done
@@ -137,6 +172,10 @@ FuchsiaGymKogaText:
 	ld [wFuchsiaGymCurScript], a
 .done
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _FuchsiaGymKogaRematchText
+        text_end
 
 .BeforeBattleText:
 	text_far _FuchsiaGymKogaBeforeBattleText

@@ -218,3 +218,13 @@ _CeladonGymAfterBattleText8::
 	para "Wait 'til next"
 	line "time!"
 	done
+
+_CeladonGymErikaRematchText::
+    text "Welcome back,"
+    line "CHAMPION!"
+
+    para "My flowers have"
+    line "grown stronger."
+
+    para "Shall we battle?"
+    done

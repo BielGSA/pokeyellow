@@ -1674,6 +1674,8 @@ ItemUseEscapeRope:
 INCLUDE "data/tilesets/escape_rope_tilesets.asm"
 
 ItemUseRepel:
+	ld a, REPEL
+	ld [wLastRepelType], a
 	ld b, 100
 
 ItemUseRepelCommon:
@@ -1778,12 +1780,78 @@ ItemUseGuardSpec:
 	jp PrintItemUseTextAndRemoveItem
 
 ItemUseSuperRepel:
+	ld a, SUPER_REPEL
+	ld [wLastRepelType], a
 	ld b, 200
 	jp ItemUseRepelCommon
 
 ItemUseMaxRepel:
+	ld a, MAX_REPEL
+	ld [wLastRepelType], a
 	ld b, 250
 	jp ItemUseRepelCommon
+
+; Pokemon Yellow Complete: when a repel expires, offer to use another
+; repel of the same type if one remains in the Bag.
+PromptReuseRepel::
+	ld a, [wLastRepelType]
+	and a
+	ret z
+	ld c, a
+	ld b, a
+	call IsItemInBag
+	ret z
+
+	ld hl, UseAnotherRepelText
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	ret nz
+
+	; Find the matching item slot so one can be removed.
+	ld hl, wNumBagItems
+	ld b, [hl]
+	inc hl
+	ld e, 0
+.findRepel
+	ld a, [hli]
+	cp c
+	jr z, .foundRepel
+	inc hl
+	inc e
+	dec b
+	jr nz, .findRepel
+	ret
+
+.foundRepel
+	ld a, e
+	ld [wWhichPokemon], a
+	ld a, 1
+	ld [wItemQuantity], a
+	ld hl, wNumBagItems
+	call RemoveItemFromInventory
+
+	ld a, [wLastRepelType]
+	cp SUPER_REPEL
+	jr z, .superRepel
+	cp MAX_REPEL
+	jr z, .maxRepel
+	ld a, 100
+	jr .setSteps
+.superRepel
+	ld a, 200
+	jr .setSteps
+.maxRepel
+	ld a, 250
+.setSteps
+	ld [wRepelRemainingSteps], a
+	ret
+
+UseAnotherRepelText:
+	text "Use another"
+	line "REPEL?"
+	done
 
 ItemUseDireHit:
 	ld a, [wIsInBattle]

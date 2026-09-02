@@ -35,6 +35,15 @@ CeruleanGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_CERULEANGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_CERULEANGYM_END_BATTLE
 	dw_const CeruleanGymMistyPostBattleScript,      SCRIPT_CERULEANGYM_MISTY_POST_BATTLE
+        dw_const CeruleanGymMistyRematchPostBattle,     SCRIPT_CERULEANGYM_MISTY_REMATCH_POST_BATTLE
+
+CeruleanGymMistyRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, CeruleanGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp CeruleanGymResetScripts
 
 CeruleanGymMistyPostBattleScript:
 	ld a, [wIsInBattle]
@@ -94,11 +103,37 @@ CeruleanGymMistyText:
 	CheckEvent EVENT_BEAT_MISTY
 	jr z, .beforeBeat
 	CheckEventReuseA EVENT_GOT_TM11
-	jr nz, .afterBeat
+        jr z, .afterBeat
 	call z, CeruleanGymReceiveTM11
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; Misty rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, CeruleanGymMistyReceivedCascadeBadgeText
+        ld de, CeruleanGymMistyReceivedCascadeBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $2
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_CERULEANGYM_MISTY_REMATCH_POST_BATTLE
+        ld [wCeruleanGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .TM11ExplanationText
 	call PrintText
 	jr .done
@@ -123,6 +158,10 @@ CeruleanGymMistyText:
 	ld [wCeruleanGymCurScript], a
 .done
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _CeruleanGymMistyRematchText
+        text_end
 
 .PreBattleText:
 	text_far _CeruleanGymMistyPreBattleText

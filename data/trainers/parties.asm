@@ -654,8 +654,14 @@ BrunoData:
 BrockData:
 	db $FF, 10, GEODUDE, 12, ONIX, 0
 
+BrockRematchData:
+        db $FF, 60, OMASTAR, 61, KABUTOPS, 62, GOLEM, 63, RHYDON, 64, AERODACTYL, 68, ONIX, 0
+
 MistyData:
 	db $FF, 18, STARYU, 21, STARMIE, 0
+
+MistyRematchData:
+    db $FF, 60, GOLDUCK, 61, CLOYSTER, 62, VAPOREON, 63, LAPRAS, 64, GYARADOS, 68, STARMIE, 0
 
 LtSurgeData:
 	db $FF, 28, RAICHU, 0
@@ -752,3 +758,38 @@ AgathaData:
 
 LanceData:
 	db $FF, 58, GYARADOS, 56, DRAGONAIR, 56, DRAGONAIR, 60, AERODACTYL, 62, DRAGONITE, 0
+
+; Gym Leader rematch teams
+LtSurgeRematchData:
+    db $FF, 60, ELECTRODE, 61, MAGNETON, 62, ELECTABUZZ, 63, JOLTEON, 68, RAICHU, 0
+
+ErikaRematchData:
+    db $FF, 60, TANGELA, 61, VICTREEBEL, 62, EXEGGUTOR, 63, PARASECT, 64, VENUSAUR, 68, VILEPLUME, 0
+
+KogaRematchData:
+    db $FF, 60, ARBOK, 61, WEEZING, 62, TENTACRUEL, 63, MUK, 64, NIDOKING, 68, VENOMOTH, 0
+
+SabrinaRematchData:
+    db $FF, 60, MR_MIME, 61, HYPNO, 62, SLOWBRO, 63, JYNX, 64, EXEGGUTOR, 68, ALAKAZAM, 0
+
+BlaineRematchData:
+    db $FF, 60, NINETALES, 61, RAPIDASH, 62, MAGMAR, 63, FLAREON, 64, CHARIZARD, 68, ARCANINE, 0
+
+GiovanniRematchData:
+    db $FF, 60, DUGTRIO, 61, MAROWAK, 62, NIDOQUEEN, 63, NIDOKING, 64, RHYDON, 68, GOLEM, 0
+
+; Elite Four and Champion rematch teams
+LoreleiRematchData:
+    db $FF, 65, DEWGONG, 66, CLOYSTER, 67, SLOWBRO, 68, JYNX, 70, LAPRAS, 72, ARTICUNO, 0
+
+BrunoRematchData:
+    db $FF, 65, HITMONLEE, 66, HITMONCHAN, 67, POLIWRATH, 68, MACHAMP, 70, ONIX, 72, MOLTRES, 0
+
+AgathaRematchData:
+    db $FF, 65, ARBOK, 66, GOLBAT, 67, HAUNTER, 68, GENGAR, 70, GENGAR, 72, MEWTWO, 0
+
+LanceRematchData:
+    db $FF, 65, GYARADOS, 66, AERODACTYL, 67, DRAGONAIR, 68, DRAGONAIR, 70, DRAGONITE, 72, ZAPDOS, 0
+
+Rival3RematchData:
+    db $FF, 68, PIKACHU, 68, ALAKAZAM, 69, EXEGGUTOR, 70, SNORLAX, 71, GYARADOS, 75, MEW, 0

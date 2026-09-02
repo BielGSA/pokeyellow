@@ -29,6 +29,7 @@ ViridianGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_VIRIDIANGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_VIRIDIANGYM_END_BATTLE
 	dw_const ViridianGymGiovanniPostBattle,         SCRIPT_VIRIDIANGYM_GIOVANNI_POST_BATTLE
+        dw_const ViridianGymGiovanniRematchPostBattle, SCRIPT_VIRIDIANGYM_GIOVANNI_REMATCH_POST_BATTLE
 	dw_const ViridianGymPlayerSpinningScript,       SCRIPT_VIRIDIANGYM_PLAYER_SPINNING
 
 ViridianGymDefaultScript:
@@ -128,6 +129,14 @@ ViridianGymPlayerSpinningScript:
 .ViridianGymLoadSpinnerArrow
 	farjp LoadSpinnerArrowTiles
 
+ViridianGymGiovanniRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, ViridianGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp ViridianGymResetScripts
+
 ViridianGymGiovanniPostBattle:
 	ld a, [wIsInBattle]
 	cp LOST_BATTLE
@@ -212,8 +221,34 @@ ViridianGymGiovanniText:
 	jr nz, .afterBeat
 	call z, ViridianGymReceiveTM27
 	call DisableWaitingAfterTextDisplay
-	jr .text_script_end
+	jp .text_script_end
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; GIOVANNI rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, .ReceivedEarthBadgeText
+        ld de, .ReceivedEarthBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $8
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_VIRIDIANGYM_GIOVANNI_REMATCH_POST_BATTLE
+        ld [wViridianGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld a, $1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld hl, .PostBattleAdviceText
@@ -245,6 +280,10 @@ ViridianGymGiovanniText:
 	ld [wViridianGymCurScript], a
 .text_script_end
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _ViridianGymGiovanniRematchText
+        text_end
 
 .PreBattleText:
 	text_far _ViridianGymGiovanniPreBattleText

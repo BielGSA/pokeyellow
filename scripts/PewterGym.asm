@@ -36,6 +36,7 @@ PewterGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_PEWTERGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_PEWTERGYM_END_BATTLE
 	dw_const PewterGymBrockPostBattle,              SCRIPT_PEWTERGYM_BROCK_POST_BATTLE
+        dw_const PewterGymBrockRematchPostBattle,     SCRIPT_PEWTERGYM_BROCK_REMATCH_POST_BATTLE
 
 PewterGymBrockPostBattle:
 	ld a, [wIsInBattle]
@@ -81,6 +82,67 @@ PewterGymScriptReceiveTM34:
 
 	jp PewterGymResetScripts
 
+PewterGymBrockRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, PewterGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+
+        ; Yellow Complete: Brock rewards the fossil not chosen in Mt. Moon.
+        ; Once both fossil events are set, later rematches give no extra fossil.
+        CheckEvent EVENT_GOT_DOME_FOSSIL
+        jr z, .giveDomeFossil
+        CheckEvent EVENT_GOT_HELIX_FOSSIL
+        jr z, .giveHelixFossil
+        jp PewterGymResetScripts
+
+.giveDomeFossil
+        lb bc, DOME_FOSSIL, 1
+        call GiveItem
+        jr nc, .bagFull
+        SetEvent EVENT_GOT_DOME_FOSSIL
+        ld hl, PewterGymBrockGaveDomeFossilText
+        call PrintText
+        jp PewterGymResetScripts
+
+.giveHelixFossil
+        lb bc, HELIX_FOSSIL, 1
+        call GiveItem
+        jr nc, .bagFull
+        SetEvent EVENT_GOT_HELIX_FOSSIL
+        ld hl, PewterGymBrockGaveHelixFossilText
+        call PrintText
+        jp PewterGymResetScripts
+
+.bagFull
+        ld hl, PewterGymBrockFossilBagFullText
+        call PrintText
+        jp PewterGymResetScripts
+
+PewterGymBrockGaveDomeFossilText:
+        text "BROCK: You earned"
+        line "this too!"
+        para "Received the"
+        line "DOME FOSSIL!"
+        sound_get_item_1
+        prompt
+
+PewterGymBrockGaveHelixFossilText:
+        text "BROCK: You earned"
+        line "this too!"
+        para "Received the"
+        line "HELIX FOSSIL!"
+        sound_get_item_1
+        prompt
+
+PewterGymBrockFossilBagFullText:
+        text "BROCK: I have"
+        line "something for you,"
+        cont "but your BAG is"
+        cont "full!"
+        prompt
+
 PewterGym_TextPointers:
 	def_text_pointers
 	dw_const PewterGymBrockText,             TEXT_PEWTERGYM_BROCK
@@ -99,7 +161,33 @@ PewterGymTrainerHeader0:
 PewterGymBrockText:
 	text_asm
 	CheckEvent EVENT_BEAT_BROCK
-	jr z, .beforeBeat
+        jr z, .beforeBeat
+
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .alreadyBeat
+
+        ; Brock rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $1
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_PEWTERGYM_BROCK_REMATCH_POST_BATTLE
+        ld [wPewterGymCurScript], a
+        ld [wCurMapScript], a
+        jr .done
+
+.alreadyBeat
 	CheckEventReuseA EVENT_GOT_TM34
 	jr nz, .afterBeat
 	call z, PewterGymScriptReceiveTM34
@@ -135,6 +223,10 @@ PewterGymBrockText:
 .PreBattleText:
 	text_far _PewterGymBrockPreBattleText
 	text_end
+
+.RematchText:
+        text_far _PewterGymBrockRematchText
+        text_end
 
 .PostBattleAdviceText:
 	text_far _PewterGymBrockPostBattleAdviceText

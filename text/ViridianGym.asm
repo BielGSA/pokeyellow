@@ -238,3 +238,13 @@ _ViridianGymGuidePostBattleText::
 	line "GIOVANNI was the"
 	cont "GYM LEADER here?"
 	done
+
+_ViridianGymGiovanniRematchText::
+    text "So, the CHAMPION"
+    line "has returned."
+
+    para "I will show you"
+    line "my true strength."
+
+    para "We battle again!"
+    done

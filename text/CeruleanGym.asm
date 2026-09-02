@@ -19,6 +19,21 @@ _CeruleanGymMistyPreBattleText::
 	line "sweetie?"
 	done
 
+_CeruleanGymMistyRematchText::
+    text "You've become"
+    line "the CHAMPION!"
+
+    para "I've trained"
+    line "hard since our"
+    cont "last battle."
+
+    para "Let's see how"
+    line "strong you've"
+    cont "really become!"
+
+    para "Let's battle!"
+    done
+
 _CeruleanGymMistyTM11ExplanationText::
 	text "TM11 teaches"
 	line "BUBBLEBEAM!"

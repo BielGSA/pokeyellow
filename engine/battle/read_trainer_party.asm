@@ -27,6 +27,117 @@ ReadTrainer:
 	ld l, a
 	ld a, [wTrainerNo]
 	ld b, a
+
+; Gym Leader rematches after becoming Champion.
+        ld a, [wTrainerClass]
+        cp BROCK
+        jp z, .brockRematch
+        cp MISTY
+        jp z, .mistyRematch
+        cp LT_SURGE
+        jp z, .ltSurgeRematch
+        cp ERIKA
+        jp z, .erikaRematch
+        cp KOGA
+        jp z, .kogaRematch
+        cp SABRINA
+        jp z, .sabrinaRematch
+        cp BLAINE
+        jp z, .blaineRematch
+        cp GIOVANNI
+        jp z, .giovanniRematch
+        cp LORELEI
+        jp z, .loreleiRematch
+        cp BRUNO
+        jp z, .brunoRematch
+        cp AGATHA
+        jp z, .agathaRematch
+        cp LANCE
+        jp z, .lanceRematch
+        cp RIVAL3
+        jp z, .rival3Rematch
+        jp .normalTrainer
+
+.brockRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, BrockRematchData
+        jp .IterateTrainer
+
+.mistyRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, MistyRematchData
+        jp .IterateTrainer
+
+.ltSurgeRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, LtSurgeRematchData
+        jp .IterateTrainer
+
+.erikaRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, ErikaRematchData
+        jp .IterateTrainer
+
+.kogaRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, KogaRematchData
+        jp .IterateTrainer
+
+.sabrinaRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, SabrinaRematchData
+        jp .IterateTrainer
+
+.blaineRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, BlaineRematchData
+        jp .IterateTrainer
+
+.giovanniRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, GiovanniRematchData
+        jp .IterateTrainer
+
+; Elite Four rematches after becoming Champion.
+.loreleiRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, LoreleiRematchData
+        jp .IterateTrainer
+
+.brunoRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, BrunoRematchData
+        jp .IterateTrainer
+
+.agathaRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, AgathaRematchData
+        jp .IterateTrainer
+
+.lanceRematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, LanceRematchData
+        jp .IterateTrainer
+
+.rival3Rematch
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jp z, .normalTrainer
+        ld hl, Rival3RematchData
+        jp .IterateTrainer
+
+.normalTrainer
 ; At this point b contains the trainer number,
 ; and hl points to the trainer class.
 ; Our next task is to iterate through the trainers,

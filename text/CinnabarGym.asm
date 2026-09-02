@@ -253,3 +253,13 @@ _CinnabarGymText_7::
 	text "Come on, answer"
 	line "the question!"
 	done
+
+_CinnabarGymBlaineRematchText::
+    text "Hah! CHAMPION!"
+    line "You came back!"
+
+    para "My fire burns"
+    line "hotter than ever!"
+
+    para "Let us battle!"
+    done

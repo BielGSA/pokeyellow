@@ -138,12 +138,32 @@ DisplayPokemartDialogue::
 	ld hl, PokemartGreetingText
 	call PrintText
 	pop hl
+
+	; Pokemon Yellow Complete:
+	; after becoming Champion, the Indigo Plateau mart also sells
+	; Master Balls and Rare Candies for easy post-game Pokedex completion.
+	ld a, [wCurMap]
+	cp INDIGO_PLATEAU_LOBBY
+	jr nz, .loadNormalMart
+	CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+	jr z, .loadNormalMart
+	ld hl, .ChampionMartItems
+	jr .loadMart
+
+.loadNormalMart
 	inc hl
+.loadMart
 	call LoadItemList
 	ld a, PRICEDITEMLISTMENU
 	ld [wListMenuID], a
 	homecall DisplayPokemartDialogue_
 	jp AfterDisplayingTextID
+
+.ChampionMartItems
+	db 9
+	db ULTRA_BALL, GREAT_BALL, FULL_RESTORE, MAX_POTION, FULL_HEAL, REVIVE, MAX_REPEL
+	db MASTER_BALL, RARE_CANDY
+	db -1
 
 PokemartGreetingText::
 	text_far _PokemartGreetingText
@@ -214,6 +234,7 @@ PlayerBlackedOutText::
 DisplayRepelWoreOffText::
 	ld hl, RepelWoreOffText
 	call PrintText
+	farcall PromptReuseRepel
 	jp AfterDisplayingTextID
 
 RepelWoreOffText::

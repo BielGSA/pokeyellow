@@ -433,7 +433,7 @@ _NotEnoughMemoryText::
 	done
 
 _OakSpeechText1::
-	text "Hello there!"
+	text "Hello trainer!"
 	line "Welcome to the"
 	cont "world of #MON!"
 
@@ -635,3 +635,4 @@ _NoPokemonText::
 	text "There are no"
 	line "#MON here!"
 	prompt
+

@@ -122,6 +122,9 @@ TalkToTrainer::
 ; checks if any trainers are seeing the player and wanting to fight
 CheckFightingMapTrainers::
 IF DEF(_DEBUG)
+        ret
+ENDC
+IF DEF(_DEBUG)
 	call DebugPressedOrHeldB
 	jr nz, .trainerNotEngaging
 ENDC

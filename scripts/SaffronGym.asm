@@ -35,6 +35,15 @@ SaffronGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_SAFFRONGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_SAFFRONGYM_END_BATTLE
 	dw_const SaffronGymSabrinaPostBattle,           SCRIPT_SAFFRONGYM_SABRINA_POST_BATTLE
+        dw_const SaffronGymSabrinaRematchPostBattle, SCRIPT_SAFFRONGYM_SABRINA_REMATCH_POST_BATTLE
+
+SaffronGymSabrinaRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, SaffronGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp SaffronGymResetScripts
 
 SaffronGymSabrinaPostBattle:
 	ld a, [wIsInBattle]
@@ -114,6 +123,32 @@ SaffronGymSabrinaText:
 	call DisableWaitingAfterTextDisplay
 	jr .done
 .afterBeat
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; SABRINA rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, .ReceivedMarshBadgeText
+        ld de, .ReceivedMarshBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $6
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_SAFFRONGYM_SABRINA_REMATCH_POST_BATTLE
+        ld [wSaffronGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .done
@@ -136,6 +171,10 @@ SaffronGymSabrinaText:
 	ld [wSaffronGymCurScript], a
 .done
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _SaffronGymSabrinaRematchText
+        text_end
 
 .Text:
 	text_far _SaffronGymSabrinaText

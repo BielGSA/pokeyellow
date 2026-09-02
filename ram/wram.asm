@@ -1732,6 +1732,8 @@ wDamage:: dw
 	ds 2
 
 wRepelRemainingSteps:: db
+; Pokemon Yellow Complete: remembers which repel should be offered again.
+wLastRepelType:: db
 
 ; list of moves for FormatMovesString
 wMoves:: ds NUM_MOVES

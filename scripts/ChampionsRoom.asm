@@ -86,6 +86,9 @@ ChampionsRoomRivalDefeatedScript:
 	jp z, ResetRivalScript
 	call UpdateSprites
 	SetEvent EVENT_BEAT_CHAMPION_RIVAL
+	ld a, TOGGLE_VIRIDIAN_GYM_GIOVANNI
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
 	ld a, PAD_CTRL_PAD
 	ld [wJoyIgnore], a
 	ld a, TEXT_CHAMPIONSROOM_RIVAL

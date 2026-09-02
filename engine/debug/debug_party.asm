@@ -1,23 +1,25 @@
-SetDebugNewGameParty: ; unreferenced except in _DEBUG
-	ld de, DebugNewGameParty
+SetDebugNewGameParty:
+    ld de, DebugNewGameParty
 .loop
-	ld a, [de]
-	cp -1
-	ret z
-	ld [wCurPartySpecies], a
-	inc de
-	ld a, [de]
-	ld [wCurEnemyLevel], a
-	inc de
-	call AddPartyMon
-	jr .loop
+    ld a, [de]
+    cp -1
+    ret z
+    ld [wCurPartySpecies], a
+    inc de
+    ld a, [de]
+    ld [wCurEnemyLevel], a
+    inc de
+    call AddPartyMon
+    jr .loop
 
-DebugNewGameParty: ; unreferenced except in _DEBUG
-	db SNORLAX, 80
-	db PERSIAN, 80
-	db JIGGLYPUFF, 15
-	db STARTER_PIKACHU, 5
-	db -1 ; end
+DebugNewGameParty:
+    db SNORLAX, 100
+    db MEWTWO, 100
+    db CHARIZARD, 100
+    db ARTICUNO, 100
+    db ZAPDOS, 100
+    db MOLTRES, 100
+    db -1 ; end
 
 PrepareNewGameDebug: ; dummy except in _DEBUG
 IF DEF(_DEBUG)
@@ -73,6 +75,8 @@ IF DEF(_DEBUG)
 	ld hl, wPokedexSeen
 	call DebugSetPokedexEntries
 	SetEvent EVENT_GOT_POKEDEX
+	SetEvent EVENT_BEAT_BROCK
+	SetEvent EVENT_BEAT_CHAMPION_RIVAL
 
 	; Rival chose Jolteon.
 	ld hl, wRivalStarter

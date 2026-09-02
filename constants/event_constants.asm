@@ -731,6 +731,7 @@
 	const_skip
 	const EVENT_BEAT_MEWTWO
 
+        const EVENT_BEAT_MEW
 ; Indigo Plateau events
 	const_next $8E0
 DEF INDIGO_PLATEAU_EVENTS_START EQU const_value

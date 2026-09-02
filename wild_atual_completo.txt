@@ -1,0 +1,1110 @@
+### data/wild/maps/CeruleanCave1F.asm
+CeruleanCave1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 50, GOLBAT
+	db 55, GOLBAT
+	db 45, GRAVELER
+	db 55, GLOOM
+	db 55, WEEPINBELL
+	db 52, SANDSLASH
+	db 54, VENOMOTH
+	db 54, PARASECT
+	db 55, DITTO
+	db 60, DITTO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/CeruleanCave2F.asm
+CeruleanCave2FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 52, GOLBAT
+	db 57, GOLBAT
+	db 50, GRAVELER
+	db 56, SANDSLASH
+	db 50, RHYHORN
+	db 60, DITTO
+	db 58, GLOOM
+	db 58, WEEPINBELL
+	db 60, RHYDON
+	db 58, RHYDON
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/CeruleanCaveB1F.asm
+CeruleanCaveB1FWildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 54, GOLBAT
+	db 59, GOLBAT
+	db 55, GRAVELER
+	db 52, RHYHORN
+	db 62, RHYDON
+	db 60, DITTO
+	db 56, CHANSEY
+	db 65, DITTO
+	db 55, LICKITUNG
+	db 50, LICKITUNG
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/DiglettsCave.asm
+DiglettsCaveWildMons:
+	def_grass_wildmons 20 ; encounter rate
+	db 18, DIGLETT
+	db 19, DIGLETT
+	db 17, DIGLETT
+	db 20, DIGLETT
+	db 16, DIGLETT
+	db 15, DIGLETT
+	db 21, DIGLETT
+	db 22, DIGLETT
+	db 29, DUGTRIO
+	db 31, DUGTRIO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/MtMoon1F.asm
+MtMoon1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db  8, ZUBAT
+	db  9, ZUBAT
+	db 10, GEODUDE
+	db  6, ZUBAT
+	db  7, ZUBAT
+	db 10, ZUBAT
+	db 10, GEODUDE
+	db 11, ZUBAT
+	db 12, SANDSHREW
+	db 11, CLEFAIRY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/MtMoonB1F.asm
+MtMoonB1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db  8, ZUBAT
+	db  9, ZUBAT
+	db 10, ZUBAT
+	db 10, GEODUDE
+	db 11, GEODUDE
+	db 11, ZUBAT
+	db  9, PARAS
+	db 11, PARAS
+	db 10, CLEFAIRY
+	db 12, CLEFAIRY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/MtMoonB2F.asm
+MtMoonB2FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 10, ZUBAT
+	db 11, GEODUDE
+	db 13, PARAS
+	db 11, ZUBAT
+	db 11, ZUBAT
+	db 12, ZUBAT
+	db 13, ZUBAT
+	db  9, CLEFAIRY
+	db 11, CLEFAIRY
+	db 13, CLEFAIRY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonMansion1F.asm
+PokemonMansion1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 34, RATTATA
+	db 34, RATICATE
+	db 23, GRIMER
+	db 26, GROWLITHE
+	db 37, RATTATA
+	db 37, RATICATE
+	db 30, GROWLITHE
+	db 26, GRIMER
+	db 34, GROWLITHE
+	db 38, GROWLITHE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonMansion2F.asm
+PokemonMansion2FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 37, RATTATA
+	db 37, RATICATE
+	db 26, GRIMER
+	db 29, GRIMER
+	db 40, RATTATA
+	db 40, RATICATE
+	db 32, GRIMER
+	db 35, GRIMER
+	db 35, MUK
+	db 38, MUK
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonMansion3F.asm
+PokemonMansion3FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 40, RATTATA
+	db 40, RATICATE
+	db 32, GRIMER
+	db 35, GRIMER
+	db 43, RATTATA
+	db 43, RATICATE
+	db 38, GRIMER
+	db 38, GRIMER
+	db 38, MUK
+	db 41, MUK
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonMansionB1F.asm
+PokemonMansionB1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 35, GRIMER
+	db 38, GRIMER
+	db 37, RATICATE
+	db 40, RATICATE
+	db 41, MUK
+	db 43, RATICATE
+	db 24, DITTO
+	db 46, RATICATE
+	db 18, DITTO
+	db 12, DITTO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower1F.asm
+PokemonTower1FWildMons:
+	def_grass_wildmons 0 ; encounter rate
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower2F.asm
+PokemonTower2FWildMons:
+	def_grass_wildmons 0 ; encounter rate
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower3F.asm
+PokemonTower3FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 20, GASTLY
+	db 21, GASTLY
+	db 22, GASTLY
+	db 23, GASTLY
+	db 24, GASTLY
+	db 19, GASTLY
+	db 18, GASTLY
+	db 25, GASTLY
+	db 20, HAUNTER
+	db 25, HAUNTER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower4F.asm
+PokemonTower4FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 20, GASTLY
+	db 21, GASTLY
+	db 22, GASTLY
+	db 23, GASTLY
+	db 24, GASTLY
+	db 19, GASTLY
+	db 18, GASTLY
+	db 25, GASTLY
+	db 20, HAUNTER
+	db 25, HAUNTER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower5F.asm
+PokemonTower5FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 22, GASTLY
+	db 23, GASTLY
+	db 24, GASTLY
+	db 25, GASTLY
+	db 26, GASTLY
+	db 21, GASTLY
+	db 20, CUBONE
+	db 27, GASTLY
+	db 22, HAUNTER
+	db 27, HAUNTER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower6F.asm
+PokemonTower6FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 22, GASTLY
+	db 23, GASTLY
+	db 24, GASTLY
+	db 25, GASTLY
+	db 26, GASTLY
+	db 21, GASTLY
+	db 22, CUBONE
+	db 27, GASTLY
+	db 22, HAUNTER
+	db 27, HAUNTER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PokemonTower7F.asm
+PokemonTower7FWildMons:
+	def_grass_wildmons 20 ; encounter rate
+	db 24, GASTLY
+	db 25, GASTLY
+	db 26, GASTLY
+	db 27, GASTLY
+	db 28, GASTLY
+	db 23, GASTLY
+	db 24, CUBONE
+	db 29, GASTLY
+	db 24, HAUNTER
+	db 29, HAUNTER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/PowerPlant.asm
+PowerPlantWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 30, MAGNEMITE
+	db 35, MAGNEMITE
+	db 33, MAGNETON
+	db 33, VOLTORB
+	db 37, VOLTORB
+	db 33, GRIMER
+	db 37, GRIMER
+	db 38, MAGNETON
+	db 33, MUK
+	db 37, MUK
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/RockTunnel1F.asm
+RockTunnel1FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 15, ZUBAT
+	db 16, GEODUDE
+	db 17, ZUBAT
+	db 19, ZUBAT
+	db 18, GEODUDE
+	db 20, GEODUDE
+	db 21, ZUBAT
+	db 17, MACHOP
+	db 19, MACHOP
+	db 21, MACHOP
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/RockTunnelB1F.asm
+RockTunnelB1FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 20, ZUBAT
+	db 17, GEODUDE
+	db 18, MACHOP
+	db 21, ZUBAT
+	db 22, ZUBAT
+	db 21, GEODUDE
+	db 20, MACHOP
+	db 14, ONIX
+	db 18, ONIX
+	db 22, ONIX
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route1.asm
+Route1WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db  3, CATERPIE
+	db  4, PIDGEY
+	db  2, RATTATA
+	db  3, RATTATA
+	db  2, PIDGEY
+	db  3, EKANS
+	db  5, SPEAROW
+	db  4, RATTATA
+	db  6, PIDGEY
+	db  7, PIDGEY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route10.asm
+Route10WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 16, MAGNEMITE
+	db 18, RATTATA
+	db 18, MAGNEMITE
+	db 20, MAGNEMITE
+	db 17, NIDORAN_M
+	db 17, NIDORAN_F
+	db 22, MAGNEMITE
+	db 20, RATICATE
+	db 16, MACHOP
+	db 18, MACHOP
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route11.asm
+Route11WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 16, PIDGEY
+	db 15, RATTATA
+	db 18, PIDGEY
+	db 15, DROWZEE
+	db 17, RATTATA
+	db 17, DROWZEE
+	db 18, PIDGEOTTO
+	db 20, PIDGEOTTO
+	db 19, DROWZEE
+	db 17, RATICATE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route12.asm
+Route12WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 25, ODDISH
+	db 25, BELLSPROUT
+	db 28, PIDGEY
+	db 28, PIDGEOTTO
+	db 27, ODDISH
+	db 27, BELLSPROUT
+	db 29, GLOOM
+	db 29, WEEPINBELL
+	db 26, FARFETCHD
+	db 31, FARFETCHD
+	end_grass_wildmons
+
+	def_water_wildmons 3 ; encounter rate
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWBRO
+	db 20, SLOWBRO
+	end_water_wildmons
+
+### data/wild/maps/Route13.asm
+Route13WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 25, ODDISH
+	db 25, BELLSPROUT
+	db 28, PIDGEOTTO
+	db 28, PIDGEY
+	db 27, ODDISH
+	db 27, BELLSPROUT
+	db 29, GLOOM
+	db 29, WEEPINBELL
+	db 26, FARFETCHD
+	db 31, FARFETCHD
+	end_grass_wildmons
+
+	def_water_wildmons 3 ; encounter rate
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWPOKE
+	db 15, SLOWBRO
+	db 20, SLOWBRO
+	end_water_wildmons
+
+### data/wild/maps/Route14.asm
+Route14WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 26, ODDISH
+	db 26, BELLSPROUT
+	db 24, VENONAT
+	db 30, PIDGEOTTO
+	db 28, ODDISH
+	db 28, BELLSPROUT
+	db 30, GLOOM
+	db 30, WEEPINBELL
+	db 27, VENONAT
+	db 30, VENOMOTH
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route15.asm
+Route15WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 26, ODDISH
+	db 26, BELLSPROUT
+	db 24, VENONAT
+	db 32, PIDGEOTTO
+	db 28, ODDISH
+	db 28, BELLSPROUT
+	db 30, GLOOM
+	db 30, WEEPINBELL
+	db 27, VENONAT
+	db 30, VENOMOTH
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route16.asm
+Route16WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 22, SPEAROW
+	db 22, DODUO
+	db 23, RATTATA
+	db 24, DODUO
+	db 24, RATTATA
+	db 26, DODUO
+	db 23, SPEAROW
+	db 24, FEAROW
+	db 25, RATICATE
+	db 26, RATICATE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route17.asm
+Route17WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 26, DODUO
+	db 27, FEAROW
+	db 27, DODUO
+	db 28, DODUO
+	db 28, PONYTA
+	db 30, PONYTA
+	db 29, FEAROW
+	db 28, DODUO
+	db 32, PONYTA
+	db 29, DODRIO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route18.asm
+Route18WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 22, SPEAROW
+	db 22, DODUO
+	db 23, RATTATA
+	db 24, DODUO
+	db 24, RATTATA
+	db 26, DODUO
+	db 23, SPEAROW
+	db 24, FEAROW
+	db 25, RATICATE
+	db 26, RATICATE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route19.asm
+Route19WildMons:
+	def_grass_wildmons 0 ; encounter rate
+	end_grass_wildmons
+
+	def_water_wildmons 5 ; encounter rate
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db 20, TENTACOOL
+	db 30, TENTACOOL
+	db 35, TENTACOOL
+	db 40, TENTACOOL
+	end_water_wildmons
+
+### data/wild/maps/Route2.asm
+Route2WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db  3, RATTATA
+	db  3, PIDGEY
+	db  4, RATTATA
+	db  4, NIDORAN_M
+	db  4, NIDORAN_F
+	db  5, PIDGEY
+	db  6, NIDORAN_M
+	db  6, NIDORAN_F
+	db  7, PIDGEY
+	db  7, PIDGEY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route20.asm
+Route20WildMons:
+	def_grass_wildmons 0 ; encounter rate
+	end_grass_wildmons
+
+	def_water_wildmons 5 ; encounter rate
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db 20, TENTACOOL
+	db 30, TENTACOOL
+	db 35, TENTACOOL
+	db 40, TENTACOOL
+	end_water_wildmons
+
+### data/wild/maps/Route21.asm
+Route21WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 15, PIDGEY
+	db 13, RATTATA
+	db 13, PIDGEY
+	db 11, PIDGEY
+	db 17, PIDGEY
+	db 15, RATTATA
+	db 15, RATICATE
+	db 17, PIDGEOTTO
+	db 19, PIDGEOTTO
+	db 15, PIDGEOTTO
+	end_grass_wildmons
+
+	def_water_wildmons 5 ; encounter rate
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db  5, TENTACOOL
+	db 10, TENTACOOL
+	db 15, TENTACOOL
+	db 20, TENTACOOL
+	db 30, TENTACOOL
+	db 35, TENTACOOL
+	db 40, TENTACOOL
+	end_water_wildmons
+
+### data/wild/maps/Route22.asm
+Route22WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db  2, NIDORAN_M
+	db  2, NIDORAN_F
+	db  3, MANKEY
+	db  3, RATTATA
+	db  4, NIDORAN_M
+	db  4, NIDORAN_F
+	db  5, MANKEY
+	db  2, SPEAROW
+	db  4, SPEAROW
+	db  6, SPEAROW
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route23.asm
+Route23WildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 41, NIDORINO
+	db 41, NIDORINA
+	db 36, MANKEY
+	db 44, NIDORINO
+	db 44, NIDORINA
+	db 40, FEAROW
+	db 41, MANKEY
+	db 45, FEAROW
+	db 41, PRIMEAPE
+	db 46, PRIMEAPE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route24.asm
+Route24WildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db 12, ODDISH
+	db 12, BELLSPROUT
+	db 13, PIDGEY
+	db 14, ODDISH
+	db 14, BELLSPROUT
+	db 15, PIDGEY
+	db 13, VENONAT
+	db 16, VENONAT
+	db 17, PIDGEY
+	db 17, PIDGEOTTO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route25.asm
+Route25WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 12, ODDISH
+	db 12, BELLSPROUT
+	db 13, PIDGEY
+	db 14, ODDISH
+	db 14, BELLSPROUT
+	db 15, PIDGEY
+	db 13, VENONAT
+	db 16, VENONAT
+	db 17, PIDGEY
+	db 17, PIDGEOTTO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route3.asm
+Route3WildMons:
+	def_grass_wildmons 20 ; encounter rate
+	db  8, SPEAROW
+	db  9, SPEAROW
+	db  9, MANKEY
+	db 10, SPEAROW
+	db  8, SANDSHREW
+	db 10, RATTATA
+	db 10, SANDSHREW
+	db 12, RATTATA
+	db 11, SPEAROW
+	db 12, SPEAROW
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route4.asm
+Route4WildMons:
+	def_grass_wildmons 20 ; encounter rate
+	db  8, SPEAROW
+	db  9, SPEAROW
+	db  9, MANKEY
+	db 10, SPEAROW
+	db  8, SANDSHREW
+	db 10, RATTATA
+	db 10, SANDSHREW
+	db 12, RATTATA
+	db 11, SPEAROW
+	db 12, SPEAROW
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route5.asm
+Route5WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 15, PIDGEY
+	db 14, RATTATA
+	db  7, ABRA
+	db 16, PIDGEY
+	db 16, RATTATA
+	db 17, PIDGEY
+	db 17, PIDGEOTTO
+	db  3, JIGGLYPUFF
+	db  5, JIGGLYPUFF
+	db  7, JIGGLYPUFF
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route6.asm
+Route6WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 15, PIDGEY
+	db 14, RATTATA
+	db  7, ABRA
+	db 16, PIDGEY
+	db 16, RATTATA
+	db 17, PIDGEY
+	db 17, PIDGEOTTO
+	db  3, JIGGLYPUFF
+	db  5, JIGGLYPUFF
+	db  7, JIGGLYPUFF
+	end_grass_wildmons
+
+	def_water_wildmons 3 ; encounter rate
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, PSYDUCK
+	db 15, GOLDUCK
+	db 20, GOLDUCK
+	end_water_wildmons
+
+### data/wild/maps/Route7.asm
+Route7WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 20, PIDGEY
+	db 22, PIDGEY
+	db 20, RATTATA
+	db 15, ABRA
+	db 19, ABRA
+	db 24, PIDGEOTTO
+	db 26, ABRA
+	db 19, JIGGLYPUFF
+	db 24, JIGGLYPUFF
+	db 24, JIGGLYPUFF
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route8.asm
+Route8WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 20, PIDGEY
+	db 22, PIDGEY
+	db 20, RATTATA
+	db 15, ABRA
+	db 19, ABRA
+	db 24, PIDGEOTTO
+	db 19, JIGGLYPUFF
+	db 24, JIGGLYPUFF
+	db 20, KADABRA
+	db 27, KADABRA
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/Route9.asm
+Route9WildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 16, NIDORAN_M
+	db 16, NIDORAN_F
+	db 18, RATTATA
+	db 18, NIDORAN_M
+	db 18, NIDORAN_F
+	db 17, SPEAROW
+	db 18, NIDORINO
+	db 18, NIDORINA
+	db 20, RATICATE
+	db 19, FEAROW
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SafariZoneCenter.asm
+SafariZoneCenterWildMons:
+	def_grass_wildmons 30 ; encounter rate
+	db 14, NIDORAN_M
+	db 36, NIDORAN_F
+	db 24, EXEGGCUTE
+	db 20, RHYHORN
+	db 23, NIDORINO
+	db 27, PARASECT
+	db 27, PARAS
+	db 32, PARASECT
+	db 22, TANGELA
+	db  7, CHANSEY
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SafariZoneEast.asm
+SafariZoneEastWildMons:
+	def_grass_wildmons 30 ; encounter rate
+	db 21, NIDORAN_M
+	db 29, NIDORAN_F
+	db 22, EXEGGCUTE
+	db 21, TAUROS
+	db 32, NIDORINA
+	db 19, CUBONE
+	db 26, EXEGGCUTE
+	db 24, MAROWAK
+	db 21, CHANSEY
+	db 15, SCYTHER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SafariZoneNorth.asm
+SafariZoneNorthWildMons:
+	def_grass_wildmons 30 ; encounter rate
+	db 36, NIDORAN_M
+	db 14, NIDORAN_F
+	db 20, EXEGGCUTE
+	db 25, RHYHORN
+	db 23, NIDORINA
+	db 28, KANGASKHAN
+	db 16, CUBONE
+	db 33, KANGASKHAN
+	db 25, SCYTHER
+	db 15, PINSIR
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SafariZoneWest.asm
+SafariZoneWestWildMons:
+	def_grass_wildmons 30 ; encounter rate
+	db 29, NIDORAN_M
+	db 21, NIDORAN_F
+	db 22, EXEGGCUTE
+	db 21, TAUROS
+	db 32, NIDORINO
+	db 19, CUBONE
+	db 26, EXEGGCUTE
+	db 24, MAROWAK
+	db 25, PINSIR
+	db 27, TANGELA
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SeafoamIslands1F.asm
+SeafoamIslands1FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 18, ZUBAT
+	db 25, KRABBY
+	db 27, KRABBY
+	db 27, ZUBAT
+	db 36, ZUBAT
+	db 28, SLOWPOKE
+	db 30, SLOWPOKE
+	db  9, ZUBAT
+	db 27, GOLBAT
+	db 36, GOLBAT
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SeafoamIslandsB1F.asm
+SeafoamIslandsB1FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 27, ZUBAT
+	db 26, KRABBY
+	db 36, ZUBAT
+	db 28, KRABBY
+	db 27, GOLBAT
+	db 29, SLOWPOKE
+	db 18, ZUBAT
+	db 28, KINGLER
+	db 22, SEEL
+	db 26, SEEL
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SeafoamIslandsB2F.asm
+SeafoamIslandsB2FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 27, ZUBAT
+	db 27, KRABBY
+	db 36, ZUBAT
+	db 27, GOLBAT
+	db 28, KINGLER
+	db 24, SEEL
+	db 29, KRABBY
+	db 36, GOLBAT
+	db 31, SLOWPOKE
+	db 31, SLOWBRO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/SeafoamIslandsB3F.asm
+SeafoamIslandsB3FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 27, GOLBAT
+	db 36, ZUBAT
+	db 29, KRABBY
+	db 27, ZUBAT
+	db 30, KINGLER
+	db 26, SEEL
+	db 31, KRABBY
+	db 30, SEEL
+	db 28, DEWGONG
+	db 32, DEWGONG
+	end_grass_wildmons
+
+	def_water_wildmons 5 ; encounter rate
+	db 25, TENTACOOL
+	db 30, TENTACOOL
+	db 20, TENTACOOL
+	db 30, STARYU
+	db 35, TENTACOOL
+	db 30, STARYU
+	db 40, TENTACOOL
+	db 30, STARYU
+	db 30, STARYU
+	db 30, STARYU
+	end_water_wildmons
+
+### data/wild/maps/SeafoamIslandsB4F.asm
+SeafoamIslandsB4FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 36, GOLBAT
+	db 36, ZUBAT
+	db 30, KRABBY
+	db 32, KINGLER
+	db 28, SEEL
+	db 32, SEEL
+	db 27, GOLBAT
+	db 45, ZUBAT
+	db 30, DEWGONG
+	db 34, DEWGONG
+	end_grass_wildmons
+
+	def_water_wildmons 5 ; encounter rate
+	db 25, TENTACOOL
+	db 30, TENTACOOL
+	db 20, TENTACOOL
+	db 30, STARYU
+	db 35, TENTACOOL
+	db 30, STARYU
+	db 40, TENTACOOL
+	db 30, STARYU
+	db 30, STARYU
+	db 30, STARYU
+	end_water_wildmons
+
+### data/wild/maps/VictoryRoad1F.asm
+VictoryRoad1FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 26, GEODUDE
+	db 31, GEODUDE
+	db 36, GEODUDE
+	db 39, ZUBAT
+	db 44, ZUBAT
+	db 41, GEODUDE
+	db 43, ONIX
+	db 45, ONIX
+	db 41, GRAVELER
+	db 47, GRAVELER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/VictoryRoad2F.asm
+VictoryRoad2FWildMons:
+	def_grass_wildmons 10 ; encounter rate
+	db 31, GEODUDE
+	db 36, GEODUDE
+	db 41, GEODUDE
+	db 44, ZUBAT
+	db 39, GOLBAT
+	db 44, GRAVELER
+	db 45, ONIX
+	db 47, ONIX
+	db 39, MACHOKE
+	db 42, MACHOKE
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/VictoryRoad3F.asm
+VictoryRoad3FWildMons:
+	def_grass_wildmons 15 ; encounter rate
+	db 36, GEODUDE
+	db 44, GOLBAT
+	db 41, GEODUDE
+	db 49, ONIX
+	db 46, GEODUDE
+	db 41, GRAVELER
+	db 42, MACHOKE
+	db 45, MACHOKE
+	db 47, GRAVELER
+	db 47, GRAVELER
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/ViridianForest.asm
+ViridianForestWildMons:
+	def_grass_wildmons 25 ; encounter rate
+	db  3, CATERPIE
+	db  4, METAPOD
+	db  4, CATERPIE
+	db  5, CATERPIE
+	db  4, PIDGEY
+	db  6, PIDGEY
+	db  6, CATERPIE
+	db  6, METAPOD
+	db  8, PIDGEY
+	db  9, PIDGEOTTO
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+
+### data/wild/maps/nothing.asm
+NothingWildMons:
+	def_grass_wildmons 0 ; encounter rate
+	end_grass_wildmons
+
+	def_water_wildmons 0 ; encounter rate
+	end_water_wildmons
+

@@ -3,13 +3,13 @@ Route14WildMons:
 	db 26, ODDISH
 	db 26, BELLSPROUT
 	db 24, VENONAT
-	db 30, PIDGEOTTO
-	db 28, ODDISH
-	db 28, BELLSPROUT
+	db 28, EKANS
+	db 28, KOFFING
 	db 30, GLOOM
 	db 30, WEEPINBELL
-	db 27, VENONAT
 	db 30, VENOMOTH
+	db 31, ARBOK
+	db 32, WEEZING
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

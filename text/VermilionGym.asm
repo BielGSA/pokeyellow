@@ -165,3 +165,13 @@ _VermilionGymGymGuideBeatLTSurgeText::
 	text "Whew! That match"
 	line "was electric!"
 	done
+
+_VermilionGymLTSurgeRematchText::
+    text "Hey, CHAMP!"
+    line "Back for more?"
+
+    para "My team is fully"
+    line "charged now!"
+
+    para "Let us battle!"
+    done

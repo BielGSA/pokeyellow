@@ -54,6 +54,15 @@ VermilionGym_ScriptPointers:
 	dw_const DisplayEnemyTrainerTextAndStartBattle, SCRIPT_VERMILIONGYM_START_BATTLE
 	dw_const EndTrainerBattle,                      SCRIPT_VERMILIONGYM_END_BATTLE
 	dw_const VermilionGymLTSurgeAfterBattleScript,  SCRIPT_VERMILIONGYM_LT_SURGE_AFTER_BATTLE
+        dw_const VermilionGymLTSurgeRematchPostBattle, SCRIPT_VERMILIONGYM_LT_SURGE_REMATCH_POST_BATTLE
+
+VermilionGymLTSurgeRematchPostBattle:
+        ld a, [wIsInBattle]
+        cp LOST_BATTLE
+        jp z, VermilionGymResetScripts
+        ld a, PAD_CTRL_PAD
+        ld [wJoyIgnore], a
+        jp VermilionGymResetScripts
 
 VermilionGymLTSurgeAfterBattleScript:
 	ld a, [wIsInBattle]
@@ -121,6 +130,32 @@ VermilionGymLTSurgeText:
 	call DisableWaitingAfterTextDisplay
 	jr .text_script_end
 .got_tm24_already
+        CheckEvent EVENT_BEAT_CHAMPION_RIVAL
+        jr z, .normalAfterBeat
+        ; LT.SURGE rematch after becoming Champion.
+        ld hl, .RematchText
+        call PrintText
+        ld hl, wStatusFlags3
+        set BIT_TALKED_TO_TRAINER, [hl]
+        set BIT_PRINT_END_BATTLE_TEXT, [hl]
+        ld hl, VermilionGymLTSurgeReceivedThunderBadgeText
+        ld de, VermilionGymLTSurgeReceivedThunderBadgeText
+        call SaveEndBattleTextPointers
+        ldh a, [hSpriteIndex]
+        ld [wSpriteIndex], a
+        call EngageMapTrainer
+        ld a, 2
+        ld [wEngagedTrainerSet], a
+        call InitBattleEnemyParameters
+        ld a, $3
+        ld [wGymLeaderNo], a
+        xor a
+        ldh [hJoyHeld], a
+        ld a, SCRIPT_VERMILIONGYM_LT_SURGE_REMATCH_POST_BATTLE
+        ld [wVermilionGymCurScript], a
+        ld [wCurMapScript], a
+        jp TextScriptEnd
+.normalAfterBeat
 	ld hl, .PostBattleAdviceText
 	call PrintText
 	jr .text_script_end
@@ -146,6 +181,10 @@ VermilionGymLTSurgeText:
 	ld [wCurMapScript], a
 .text_script_end
 	jp TextScriptEnd
+
+.RematchText:
+        text_far _VermilionGymLTSurgeRematchText
+        text_end
 
 .PreBattleText:
 	text_far _VermilionGymLTSurgePreBattleText

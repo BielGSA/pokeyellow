@@ -219,3 +219,13 @@ _FuchsiaGymGymGuideBeatKogaText::
 	line "ninja can terrify"
 	cont "even now!"
 	done
+
+_FuchsiaGymKogaRematchText::
+    text "Fwahahaha!"
+    line "The CHAMPION!"
+
+    para "My techniques"
+    line "have improved!"
+
+    para "Face me again!"
+    done
