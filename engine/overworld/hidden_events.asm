@@ -78,6 +78,20 @@ TryContextFieldMove::
 
 ; if a hidden event was found, stores $00 in [hDidntFindAnyHiddenEvent], else stores $ff
 CheckForHiddenEvent::
+	call TryContextFieldMove
+	jr nc, .normalHiddenEvent
+
+; Reuse the normal "hidden event found" return path in ROM0. The no-op
+; function below is called after the field move, so the A press is consumed
+; without adding any bytes to the fixed Home bank.
+	xor a
+	ldh [hDidntFindAnyHiddenEvent], a
+	ld a, BANK(ContextFieldMoveDone)
+	ld [wHiddenEventFunctionRomBank], a
+	ld hl, ContextFieldMoveDone
+	ret
+
+.normalHiddenEvent
 	ld hl, hItemAlreadyFound
 	xor a
 	ld [hli], a ; [hItemAlreadyFound]
@@ -134,6 +148,9 @@ CheckForHiddenEvent::
 .noMatch
 	ld a, $ff
 	ldh [hDidntFindAnyHiddenEvent], a
+	ret
+
+ContextFieldMoveDone:
 	ret
 
 ; checks if the coordinates in front of the player's sprite match Y in b and X in c
