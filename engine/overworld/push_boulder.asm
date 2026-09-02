@@ -1,7 +1,52 @@
+; Pokemon Yellow Complete: find the first party Pokemon that knows the
+; requested field move (move ID in b). Sets wWhichPokemon and wCurPartySpecies.
+; Carry set on success.
+FindPartyMonWithFieldMove::
+	ld hl, wPartyMon1Moves
+	ld c, 0
+.monLoop
+	ld d, NUM_MOVES
+.moveLoop
+	ld a, [hli]
+	cp b
+	jr z, .found
+	dec d
+	jr nz, .moveLoop
+	ld de, PARTYMON_STRUCT_LENGTH - NUM_MOVES
+	add hl, de
+	inc c
+	ld a, [wPartyCount]
+	cp c
+	jr nz, .monLoop
+	and a
+	ret
+.found
+	ld a, c
+	ld [wWhichPokemon], a
+	ld hl, wPartySpecies
+	ld b, 0
+	add hl, bc
+	ld a, [hl]
+	ld [wCurPartySpecies], a
+	scf
+	ret
+
 TryPushingBoulder::
 	ld a, [wStatusFlags1]
 	bit BIT_STRENGTH_ACTIVE, a
+	jr nz, .strengthReady
+
+; Direct Strength: when the player tries to push a boulder, automatically
+; activate Strength if the Rainbow Badge is owned and a party Pokemon knows it.
+	ld a, [wObtainedBadges]
+	bit BIT_RAINBOWBADGE, a
 	ret z
+	ld b, STRENGTH
+	call FindPartyMonWithFieldMove
+	ret nc
+	ld hl, wStatusFlags1
+	set BIT_STRENGTH_ACTIVE, [hl]
+.strengthReady
 	ld a, [wMiscFlags]
 	bit BIT_BOULDER_DUST, a
 	ret nz
