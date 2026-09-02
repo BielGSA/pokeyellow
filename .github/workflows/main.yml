@@ -44,11 +44,10 @@ jobs:
           make DEBUG=1 -j$(nproc) compare
           .github/checkdiff.sh
 
-      - name: Make
+      - name: Build playable ROM
         if: ${{ github.repository_owner != 'pret' }}
         run: |
-          make -j$(nproc)
-          .github/checkdiff.sh
+          make -j$(nproc) pokeyellow.gbc
 
       - name: Upload playable ROM
         if: ${{ github.repository_owner != 'pret' && success() }}
@@ -120,8 +119,7 @@ jobs:
           make DEBUG=1 -j$(sysctl -n hw.ncpu) compare
           .github/checkdiff.sh
 
-      - name: Make
+      - name: Build playable ROM
         if: ${{ github.repository_owner != 'pret' }}
         run: |
-          make -j$(sysctl -n hw.ncpu)
-          .github/checkdiff.sh
+          make -j$(sysctl -n hw.ncpu) pokeyellow.gbc
