@@ -11,6 +11,15 @@ CheckForHiddenEventOrBookshelfOrCardKeyDoor::
 ; A button is pressed
 	ld a, BANK(CheckForHiddenEvent)
 	call BankswitchCommon
+
+; Pokemon Yellow Complete: before normal interactions, try direct Cut/Surf.
+	call TryContextFieldMove
+	jr nc, .checkHiddenEvent
+	xor a
+	ldh [hItemAlreadyFound], a
+	jr .done
+
+.checkHiddenEvent
 	call CheckForHiddenEvent
 	ldh a, [hDidntFindAnyHiddenEvent]
 	and a
