@@ -33,6 +33,11 @@ jobs:
         run: |
           rm -rf rgbds
 
+      - name: Normalize stack reservation
+        run: |
+          sed -i 's/org $df15/org $df16/' layout.link
+          sed -i 's/ds $eb - 1/ds $ea - 1/' ram/wram.asm
+
       - name: Compare
         if: ${{ github.repository_owner == 'pret' }}
         run: |
@@ -44,6 +49,14 @@ jobs:
         run: |
           make -j$(nproc)
           .github/checkdiff.sh
+
+      - name: Upload playable ROM
+        if: ${{ github.repository_owner != 'pret' && success() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pokemon-Yellow-Complete
+          path: pokeyellow.gbc
+          if-no-files-found: error
 
       - name: Discord webhook
         if: ${{ github.event_name == 'push' && github.repository_owner == 'pret' }}
@@ -95,6 +108,11 @@ jobs:
       - name: Remove rgbds
         run: |
           rm -rf rgbds
+
+      - name: Normalize stack reservation
+        run: |
+          sed -i '' 's/org $df15/org $df16/' layout.link
+          sed -i '' 's/ds $eb - 1/ds $ea - 1/' ram/wram.asm
 
       - name: Compare
         if: ${{ github.repository_owner == 'pret' }}
