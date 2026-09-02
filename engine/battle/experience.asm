@@ -2,7 +2,9 @@ GainExperience:
 	ld a, [wLinkState]
 	cp LINK_STATE_BATTLING
 	ret z ; return if link battle
-	call DivideExpDataByNumMonsGainingExp
+	ld a, [wOptions]
+	bit BIT_EXP_ALL, a
+	call z, DivideExpDataByNumMonsGainingExp
 	ld hl, wPartyMon1
 	xor a
 	ld [wWhichPokemon], a
@@ -12,6 +14,9 @@ GainExperience:
 	or [hl] ; is mon's HP 0?
 	jp z, .nextMon ; if so, go to next mon
 	push hl
+	ld a, [wOptions]
+	bit BIT_EXP_ALL, a
+	jr nz, .expAllEnabled
 	ld hl, wPartyGainExpFlags
 	ld a, [wWhichPokemon]
 	ld c, a
@@ -21,6 +26,10 @@ GainExperience:
 	and a ; is mon's gain exp flag set?
 	pop hl
 	jp z, .nextMon ; if mon's gain exp flag not set, go to next mon
+	jr .canGainExp
+.expAllEnabled
+	pop hl
+.canGainExp
 	ld de, (MON_HP_EXP + 1) - (MON_HP + 1)
 	add hl, de
 	ld d, h
