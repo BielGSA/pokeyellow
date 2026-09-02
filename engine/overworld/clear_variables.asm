@@ -17,4 +17,22 @@ ClearVariablesOnEnterMap::
 	ld hl, wWhichTrade
 	ld bc, wStandingOnWarpPadOrHole - wWhichTrade
 	call FillMemory
+
+; Pokemon Yellow Complete: automatically illuminate Rock Tunnel when the
+; Boulder Badge is owned and any party Pokemon knows Flash.
+	ld a, [wCurMap]
+	cp ROCK_TUNNEL_1F
+	jr z, .tryAutoFlash
+	cp ROCK_TUNNEL_B1F
+	jr nz, .done
+.tryAutoFlash
+	ld a, [wObtainedBadges]
+	bit BIT_BOULDERBADGE, a
+	jr z, .done
+	ld b, FLASH
+	call FindPartyMonWithFieldMove
+	jr nc, .done
+	xor a
+	ld [wMapPalOffset], a
+.done
 	ret
