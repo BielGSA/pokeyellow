@@ -5,7 +5,8 @@
 	const OPT_BATTLE_STYLE ; 2
 	const OPT_SOUND        ; 3
 	const OPT_PRINTER      ; 4
-	const_skip 2
+	const OPT_EXP_ALL      ; 5
+	const_skip             ; 6
 	const OPT_CANCEL       ; 7
 DEF NUM_OPTIONS EQU const_value ; 8
 
@@ -47,7 +48,7 @@ OptionMenuJumpTable:
 	dw OptionsMenu_BattleStyle
 	dw OptionsMenu_SpeakerSettings
 	dw OptionsMenu_GBPrinterBrightness
-	dw OptionsMenu_Dummy
+	dw OptionsMenu_ExpAll
 	dw OptionsMenu_Dummy
 	dw OptionsMenu_Cancel
 
@@ -371,6 +372,38 @@ GetGBPrinterBrightness:
 	lb de, PRINTER_BRIGHTNESS_DARKER, PRINTER_BRIGHTNESS_LIGHTEST
 	ret
 
+OptionsMenu_ExpAll:
+	ldh a, [hJoy5]
+	and PAD_LEFT | PAD_RIGHT
+	jr z, .nothingPressed
+	ld a, [wOptions]
+	xor 1 << BIT_EXP_ALL
+	ld [wOptions], a
+.nothingPressed
+	ld a, [wOptions]
+	bit BIT_EXP_ALL, a
+	ld bc, 0
+	jr z, .display
+	inc c
+.display
+	ld hl, .Strings
+	add hl, bc
+	add hl, bc
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	hlcoord 14, 12
+	call PlaceString
+	and a ; clear carry flag
+	ret
+
+.Strings:
+	dw .Off
+	dw .On
+
+.Off: db "OFF@"
+.On:  db "ON @"
+
 OptionsMenu_Dummy:
 	and a ; clear carry flag
 	ret
@@ -404,9 +437,9 @@ OptionsControl:
 	scf
 	ret
 .doNotWrap
-	cp OPT_PRINTER ; skip the next two dummy options
+	cp OPT_EXP_ALL ; skip the remaining dummy option
 	jr c, .increase
-	ld [hl], OPT_CANCEL - 1 ; Cancel is after Print
+	ld [hl], OPT_CANCEL - 1 ; Cancel is after EXP. ALL
 .increase
 	inc [hl]
 	scf
@@ -414,9 +447,9 @@ OptionsControl:
 
 .pressedUp
 	ld a, [hl]
-	cp OPT_CANCEL ; skip the previous two dummy options
+	cp OPT_CANCEL ; skip the previous dummy option
 	jr nz, .doNotSkip
-	ld [hl], OPT_PRINTER ; Print is before Cancel
+	ld [hl], OPT_EXP_ALL ; EXP. ALL is before Cancel
 	scf
 	ret
 .doNotSkip
@@ -456,7 +489,7 @@ InitOptionsMenu:
 	call PlaceString
 	xor a
 	ld [wOptionsCursorLocation], a
-	ld c, 5 ; the number of options to loop through
+	ld c, 6 ; the number of options to loop through
 .loop
 	push bc
 	call GetOptionPointer ; updates the next option
@@ -477,7 +510,8 @@ AllOptionsText:
 	next "ANIMATION  :"
 	next "BATTLESTYLE:"
 	next "SOUND:"
-	next "PRINT:@"
+	next "PRINT:"
+	next "EXP. ALL   :@"
 
 OptionMenuCancelText:
 	db "CANCEL@"
