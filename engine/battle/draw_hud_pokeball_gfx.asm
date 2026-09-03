@@ -143,16 +143,13 @@ DrawPlayerExpBar:
 	cp MAX_LEVEL
 	jr z, .maxLevel
 
-	; CalcExperience uses the current species header's growth rate. Preserve
-	; the caller's current species/header because this HUD routine can run in
-	; the middle of battle logic.
 	ld a, [wCurSpecies]
 	push af
 	ld a, [wBattleMonSpecies]
 	ld [wCurSpecies], a
 	call GetMonHeader
 
-	; Save the cumulative EXP required for the current level.
+	; Save cumulative EXP required for the current level.
 	ld a, [wBattleMonLevel]
 	ld d, a
 	callfar CalcExperience
@@ -164,21 +161,7 @@ DrawPlayerExpBar:
 	ldh a, [hExperience + 2]
 	ld [hl], a
 
-	; denominator DE = EXP(next level) - EXP(current level).
-	ld a, [wBattleMonLevel]
-	inc a
-	ld d, a
-	callfar CalcExperience
-	ld hl, wBuffer + 2
-	ldh a, [hExperience + 2]
-	sub [hl]
-	ld e, a
-	dec hl
-	ldh a, [hExperience + 1]
-	sbc [hl]
-	ld d, a
-
-	; Copy the active party Pokemon's cumulative EXP into scratch space.
+	; Copy active party Pokemon's cumulative EXP into scratch space.
 	ld a, [wPlayerMonNumber]
 	ld hl, wPartyMon1
 	ld bc, PARTYMON_STRUCT_LENGTH
@@ -195,9 +178,7 @@ DrawPlayerExpBar:
 	ld a, [hl]
 	ld [de], a
 
-	; numerator BC = current EXP - EXP(current level). The interval between
-	; adjacent Gen 1 levels fits in 16 bits, which is exactly what the game's
-	; HP-bar length helper expects.
+	; BC = progress made since the current level threshold.
 	ld hl, wBuffer + 2
 	ld a, [wBuffer + 5]
 	sub [hl]
@@ -207,7 +188,7 @@ DrawPlayerExpBar:
 	sbc [hl]
 	ld b, a
 
-	; Recalculate the denominator because DE was used while copying EXP.
+	; DE = EXP interval between this level and the next.
 	ld a, [wBattleMonLevel]
 	inc a
 	ld d, a
@@ -224,14 +205,15 @@ DrawPlayerExpBar:
 	ld a, b
 	or c
 	jr z, .empty
-	call GetHPBarLength ; BC / DE scaled to 48 pixels, result in E
+	predef HPBarLength ; BC / DE scaled to 48 pixels, result in E
 	jr .restoreAndDraw
 .empty
 	ld e, 0
 .restoreAndDraw
 	pop af
 	ld [wCurSpecies], a
-	call GetMonHeader
+	and a
+	call nz, GetMonHeader
 	jr .draw
 
 .maxLevel
