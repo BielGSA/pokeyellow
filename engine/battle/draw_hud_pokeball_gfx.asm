@@ -127,7 +127,144 @@ PlacePlayerHUDTiles:
 	call CopyData
 	hlcoord 18, 10
 	ld de, -1
-	jr PlaceHUDTiles
+	call PlaceHUDTiles
+	jp DrawPlayerExpBar
+
+; Pokemon Yellow Complete: show the active Pokemon's progress toward its
+; next level as a six-tile (48 pixel) bar in the bottom edge of its HUD.
+; The existing HP-bar fill tiles are reused so the addition matches Gen 1.
+DrawPlayerExpBar:
+	ld a, [wBattleMonSpecies]
+	and a
+	ret z
+	ld a, [wBattleMonLevel]
+	and a
+	ret z
+	cp MAX_LEVEL
+	jr z, .maxLevel
+
+	; CalcExperience uses the current species header's growth rate. Preserve
+	; the caller's current species/header because this HUD routine can run in
+	; the middle of battle logic.
+	ld a, [wCurSpecies]
+	push af
+	ld a, [wBattleMonSpecies]
+	ld [wCurSpecies], a
+	call GetMonHeader
+
+	; Save the cumulative EXP required for the current level.
+	ld a, [wBattleMonLevel]
+	ld d, a
+	callfar CalcExperience
+	ld hl, wBuffer
+	ldh a, [hExperience]
+	ld [hli], a
+	ldh a, [hExperience + 1]
+	ld [hli], a
+	ldh a, [hExperience + 2]
+	ld [hl], a
+
+	; denominator DE = EXP(next level) - EXP(current level).
+	ld a, [wBattleMonLevel]
+	inc a
+	ld d, a
+	callfar CalcExperience
+	ld hl, wBuffer + 2
+	ldh a, [hExperience + 2]
+	sub [hl]
+	ld e, a
+	dec hl
+	ldh a, [hExperience + 1]
+	sbc [hl]
+	ld d, a
+
+	; Copy the active party Pokemon's cumulative EXP into scratch space.
+	ld a, [wPlayerMonNumber]
+	ld hl, wPartyMon1
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld bc, MON_EXP
+	add hl, bc
+	ld de, wBuffer + 3
+	ld a, [hli]
+	ld [de], a
+	inc de
+	ld a, [hli]
+	ld [de], a
+	inc de
+	ld a, [hl]
+	ld [de], a
+
+	; numerator BC = current EXP - EXP(current level). The interval between
+	; adjacent Gen 1 levels fits in 16 bits, which is exactly what the game's
+	; HP-bar length helper expects.
+	ld hl, wBuffer + 2
+	ld a, [wBuffer + 5]
+	sub [hl]
+	ld c, a
+	dec hl
+	ld a, [wBuffer + 4]
+	sbc [hl]
+	ld b, a
+
+	; Recalculate the denominator because DE was used while copying EXP.
+	ld a, [wBattleMonLevel]
+	inc a
+	ld d, a
+	callfar CalcExperience
+	ld hl, wBuffer + 2
+	ldh a, [hExperience + 2]
+	sub [hl]
+	ld e, a
+	dec hl
+	ldh a, [hExperience + 1]
+	sbc [hl]
+	ld d, a
+
+	ld a, b
+	or c
+	jr z, .empty
+	call GetHPBarLength ; BC / DE scaled to 48 pixels, result in E
+	jr .restoreAndDraw
+.empty
+	ld e, 0
+.restoreAndDraw
+	pop af
+	ld [wCurSpecies], a
+	call GetMonHeader
+	jr .draw
+
+.maxLevel
+	ld e, 48
+.draw
+	hlcoord 11, 11
+	ld d, 6
+	ld a, e
+.drawFullTiles
+	cp 8
+	jr c, .partialTile
+	sub 8
+	ld [hl], $6b ; full HP-bar segment
+	inc hl
+	dec d
+	jr nz, .drawFullTiles
+	ret
+.partialTile
+	and a
+	jr z, .emptyTiles
+	add $63 ; $64-$6a are 1-7 pixel HP-bar segments
+	ld [hli], a
+	dec d
+.emptyTiles
+	ld a, d
+	and a
+	ret z
+	ld a, $63 ; empty HP-bar segment
+.emptyTileLoop
+	ld [hli], a
+	dec d
+	jr nz, .emptyTileLoop
+	ret
 
 PlayerBattleHUDGraphicsTiles:
 ; The tile numbers for specific parts of the battle display for the player's pokemon
@@ -146,7 +283,7 @@ PlaceEnemyHUDTiles:
 
 EnemyBattleHUDGraphicsTiles:
 ; The tile numbers for specific parts of the battle display for the enemy
-	db $73 ; unused ($73 is hardcoded in the routine that uses these bytes)
+	db $73 ; unused ($73 is hardcoded into the routine that uses these bytes)
 	db $74 ; lower-left corner tile of the HUD
 	db $78 ; lower-right triangle tile of the HUD
 
