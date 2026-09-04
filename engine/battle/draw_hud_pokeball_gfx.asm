@@ -130,9 +130,6 @@ PlacePlayerHUDTiles:
 	call PlaceHUDTiles
 	jp DrawPlayerExpBar
 
-; Pokemon Yellow Complete: show the active Pokemon's progress toward its
-; next level as a six-tile (48 pixel) bar in the bottom edge of its HUD.
-; The existing HP-bar fill tiles are reused so the addition matches Gen 1.
 DrawPlayerExpBar:
 	ld a, [wBattleMonSpecies]
 	and a
@@ -149,63 +146,69 @@ DrawPlayerExpBar:
 	ld [wCurSpecies], a
 	call GetMonHeader
 
-	; Save cumulative EXP required for the current level.
+	; Current level cumulative EXP. Keep the low two bytes on the stack so
+	; the next CalcExperience call cannot clobber our scratch data.
 	ld a, [wBattleMonLevel]
 	ld d, a
 	callfar CalcExperience
-	ld hl, wBuffer
-	ldh a, [hExperience]
-	ld [hli], a
 	ldh a, [hExperience + 1]
-	ld [hli], a
+	push af
 	ldh a, [hExperience + 2]
-	ld [hl], a
+	push af
 
-	; Copy active party Pokemon's cumulative EXP into scratch space.
-	ld a, [wPlayerMonNumber]
-	ld hl, wPartyMon1
-	ld bc, PARTYMON_STRUCT_LENGTH
-	call AddNTimes
-	ld bc, MON_EXP
-	add hl, bc
-	ld de, wBuffer + 3
-	ld a, [hli]
-	ld [de], a
-	inc de
-	ld a, [hli]
-	ld [de], a
-	inc de
-	ld a, [hl]
-	ld [de], a
-
-	; BC = progress made since the current level threshold.
-	ld hl, wBuffer + 2
-	ld a, [wBuffer + 5]
-	sub [hl]
-	ld c, a
-	dec hl
-	ld a, [wBuffer + 4]
-	sbc [hl]
-	ld b, a
-
-	; DE = EXP interval between this level and the next.
+	; Next level cumulative EXP.
 	ld a, [wBattleMonLevel]
 	inc a
 	ld d, a
 	callfar CalcExperience
-	ld hl, wBuffer + 2
-	ldh a, [hExperience + 2]
-	sub [hl]
-	ld e, a
-	dec hl
 	ldh a, [hExperience + 1]
-	sbc [hl]
+	ld b, a
+	ldh a, [hExperience + 2]
+	ld c, a
+
+	; Restore current-level threshold low word into DE.
+	pop af
+	ld e, a
+	pop af
 	ld d, a
+
+	; Save interval = next - current in wBuffer[0..1].
+	ld a, c
+	sub e
+	ld [wBuffer + 1], a
+	ld a, b
+	sbc d
+	ld [wBuffer], a
+
+	; Read active party Pokemon cumulative EXP low word.
+	ld a, [wPlayerMonNumber]
+	ld hl, wPartyMon1
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld bc, MON_EXP + 1
+	add hl, bc
+	ld a, [hli]
+	ld b, a
+	ld c, [hl]
+
+	; BC = current progress = mon EXP - current-level threshold.
+	ld a, c
+	sub e
+	ld c, a
+	ld a, b
+	sbc d
+	ld b, a
+
+	; DE = interval to next level.
+	ld a, [wBuffer]
+	ld d, a
+	ld a, [wBuffer + 1]
+	ld e, a
 
 	ld a, b
 	or c
 	jr z, .empty
-	predef HPBarLength ; BC / DE scaled to 48 pixels, result in E
+	predef HPBarLength
 	jr .restoreAndDraw
 .empty
 	ld e, 0
@@ -226,7 +229,7 @@ DrawPlayerExpBar:
 	cp 8
 	jr c, .partialTile
 	sub 8
-	ld [hl], $6b ; full HP-bar segment
+	ld [hl], $6b
 	inc hl
 	dec d
 	jr nz, .drawFullTiles
@@ -234,14 +237,14 @@ DrawPlayerExpBar:
 .partialTile
 	and a
 	jr z, .emptyTiles
-	add $63 ; $64-$6a are 1-7 pixel HP-bar segments
+	add $63
 	ld [hli], a
 	dec d
 .emptyTiles
 	ld a, d
 	and a
 	ret z
-	ld a, $63 ; empty HP-bar segment
+	ld a, $63
 .emptyTileLoop
 	ld [hli], a
 	dec d
@@ -249,10 +252,9 @@ DrawPlayerExpBar:
 	ret
 
 PlayerBattleHUDGraphicsTiles:
-; The tile numbers for specific parts of the battle display for the player's pokemon
-	db $73 ; unused ($73 is hardcoded into the routine that uses these bytes)
-	db $77 ; lower-right corner tile of the HUD
-	db $6F ; lower-left triangle tile of the HUD
+	db $73
+	db $77
+	db $6F
 
 PlaceEnemyHUDTiles:
 	ld hl, EnemyBattleHUDGraphicsTiles
@@ -264,16 +266,15 @@ PlaceEnemyHUDTiles:
 	jr PlaceHUDTiles
 
 EnemyBattleHUDGraphicsTiles:
-; The tile numbers for specific parts of the battle display for the enemy
-	db $73 ; unused ($73 is hardcoded into the routine that uses these bytes)
-	db $74 ; lower-left corner tile of the HUD
-	db $78 ; lower-right triangle tile of the HUD
+	db $73
+	db $74
+	db $78
 
 PlaceHUDTiles:
 	ld [hl], $73
 	ld bc, SCREEN_WIDTH
 	add hl, bc
-	ld a, [wHUDCornerTile] ; leftmost tile
+	ld a, [wHUDCornerTile]
 	ld [hl], a
 	ld a, 8
 .loop
@@ -282,7 +283,7 @@ PlaceHUDTiles:
 	dec a
 	jr nz, .loop
 	add hl, de
-	ld a, [wHUDTriangleTile] ; rightmost tile
+	ld a, [wHUDTriangleTile]
 	ld [hl], a
 	ret
 
@@ -313,7 +314,6 @@ SetupPlayerAndEnemyPokeballs:
 	ld hl, wShadowOAMSprite06
 	jp WritePokeballOAMData
 
-; four tiles: pokeball, black pokeball (status ailment), crossed out pokeball (fainted) and pokeball slot (no mon)
 PokeballTileGraphics::
 	INCBIN "gfx/battle/balls.2bpp"
 PokeballTileGraphicsEnd:
