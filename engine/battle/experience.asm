@@ -157,6 +157,18 @@ GainExperience:
 	call GetPartyMonName
 	ld hl, GainedText
 	call PrintText
+
+	; Pokemon Yellow Complete: if the Pokemon that just received EXP is the
+	; one currently in battle, immediately redraw its EXP progress bar.
+	ld a, [wWhichPokemon]
+	ld b, a
+	ld a, [wPlayerMonNumber]
+	cp b
+	jr nz, .skipExpBarRefresh
+	ld hl, DrawPlayerExpBar
+	call CallBattleCore
+.skipExpBarRefresh
+
 	xor a ; PLAYER_PARTY_DATA
 	ld [wMonDataLocation], a
 	call LoadMonData
