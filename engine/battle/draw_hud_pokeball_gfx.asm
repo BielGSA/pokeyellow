@@ -142,7 +142,7 @@ DrawPlayerExpBar:
 	and a
 	ret z
 	cp MAX_LEVEL
-	jr z, .maxLevel
+	jp z, .maxLevel
 
 	ld a, [wCurSpecies]
 	push af
@@ -195,19 +195,19 @@ DrawPlayerExpBar:
 	ld b, a
 	ld a, [hli]
 	cp b
-	jr c, .invalidRange
+	jp c, .invalidRange
 	jr nz, .aboveCurrentHigh
 	ld a, [wBuffer + 1]
 	ld b, a
 	ld a, [hli]
 	cp b
-	jr c, .invalidRange
+	jp c, .invalidRange
 	jr nz, .aboveCurrentMid
 	ld a, [wBuffer + 2]
 	ld b, a
 	ld a, [hl]
 	cp b
-	jr c, .invalidRange
+	jp c, .invalidRange
 	jr .currentRangeOK
 .aboveCurrentHigh
 	inc hl
@@ -227,18 +227,18 @@ DrawPlayerExpBar:
 	ld a, [hli]
 	cp b
 	jr c, .belowNext
-	jr nz, .invalidRange
+	jp nz, .invalidRange
 	ld a, [wBuffer + 4]
 	ld b, a
 	ld a, [hli]
 	cp b
 	jr c, .belowNext
-	jr nz, .invalidRange
+	jp nz, .invalidRange
 	ld a, [wBuffer + 5]
 	ld b, a
 	ld a, [hl]
 	cp b
-	jr nc, .invalidRange
+	jp nc, .invalidRange
 .belowNext
 
 	; BC = progress since the current-level threshold (low 16 bits).
