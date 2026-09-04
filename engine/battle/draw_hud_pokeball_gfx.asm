@@ -130,6 +130,10 @@ PlacePlayerHUDTiles:
 	call PlaceHUDTiles
 	jp DrawPlayerExpBar
 
+; Draw the active Pokemon's progress through its current level.
+; EXP is stored as a 3-byte cumulative value. Validate the full 24-bit value
+; first, then use the low-word differences with the game's native 48-pixel
+; HP-bar scaler. A level-to-level interval fits in 16 bits in Gen 1.
 DrawPlayerExpBar:
 	ld a, [wBattleMonSpecies]
 	and a
@@ -146,70 +150,142 @@ DrawPlayerExpBar:
 	ld [wCurSpecies], a
 	call GetMonHeader
 
-	; Current level cumulative EXP. Keep the low two bytes on the stack so
-	; the next CalcExperience call cannot clobber our scratch data.
+	; Save cumulative EXP required for the current level on the stack.
 	ld a, [wBattleMonLevel]
 	ld d, a
 	callfar CalcExperience
+	ldh a, [hExperience]
+	push af
 	ldh a, [hExperience + 1]
 	push af
 	ldh a, [hExperience + 2]
 	push af
 
-	; Next level cumulative EXP.
+	; Save cumulative EXP required for the next level in wBuffer+3..5.
 	ld a, [wBattleMonLevel]
 	inc a
 	ld d, a
 	callfar CalcExperience
+	ld hl, wBuffer + 3
+	ldh a, [hExperience]
+	ld [hli], a
 	ldh a, [hExperience + 1]
-	ld b, a
+	ld [hli], a
 	ldh a, [hExperience + 2]
-	ld c, a
+	ld [hl], a
 
-	; Restore current-level threshold low word into DE.
+	; Restore current-level threshold into wBuffer..2.
 	pop af
-	ld e, a
+	ld [wBuffer + 2], a
 	pop af
-	ld d, a
-
-	; Save interval = next - current in wBuffer[0..1].
-	ld a, c
-	sub e
 	ld [wBuffer + 1], a
-	ld a, b
-	sbc d
+	pop af
 	ld [wBuffer], a
 
-	; Read active party Pokemon cumulative EXP low word.
+	; Point HL at the active party Pokemon's 3-byte cumulative EXP.
+	ld a, [wPlayerMonNumber]
+	ld hl, wPartyMon1
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld bc, MON_EXP
+	add hl, bc
+
+	; The mon EXP must be >= the current-level threshold.
+	ld a, [wBuffer]
+	ld b, a
+	ld a, [hli]
+	cp b
+	jr c, .invalidRange
+	jr nz, .aboveCurrentHigh
+	ld a, [wBuffer + 1]
+	ld b, a
+	ld a, [hli]
+	cp b
+	jr c, .invalidRange
+	jr nz, .aboveCurrentMid
+	ld a, [wBuffer + 2]
+	ld b, a
+	ld a, [hl]
+	cp b
+	jr c, .invalidRange
+	jr .currentRangeOK
+.aboveCurrentHigh
+	inc hl
+.aboveCurrentMid
+	inc hl
+.currentRangeOK
+
+	; Rebuild the pointer and require mon EXP < next-level threshold.
+	ld a, [wPlayerMonNumber]
+	ld hl, wPartyMon1
+	ld bc, PARTYMON_STRUCT_LENGTH
+	call AddNTimes
+	ld bc, MON_EXP
+	add hl, bc
+	ld a, [wBuffer + 3]
+	ld b, a
+	ld a, [hli]
+	cp b
+	jr c, .belowNext
+	jr nz, .invalidRange
+	ld a, [wBuffer + 4]
+	ld b, a
+	ld a, [hli]
+	cp b
+	jr c, .belowNext
+	jr nz, .invalidRange
+	ld a, [wBuffer + 5]
+	ld b, a
+	ld a, [hl]
+	cp b
+	jr nc, .invalidRange
+.belowNext
+
+	; BC = progress since the current-level threshold (low 16 bits).
 	ld a, [wPlayerMonNumber]
 	ld hl, wPartyMon1
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call AddNTimes
 	ld bc, MON_EXP + 1
 	add hl, bc
-	ld a, [hli]
-	ld b, a
-	ld c, [hl]
-
-	; BC = current progress = mon EXP - current-level threshold.
-	ld a, c
+	ld a, [wBuffer + 2]
+	ld e, a
+	ld a, [hl]
+	inc hl
+	ld c, a
+	ld a, [hl]
 	sub e
 	ld c, a
-	ld a, b
+	ld a, [wBuffer + 1]
+	ld d, a
+	dec hl
+	ld a, [hl]
 	sbc d
 	ld b, a
 
-	; DE = interval to next level.
-	ld a, [wBuffer]
+	; DE = EXP interval from current level to next level (low 16 bits).
+	ld a, [wBuffer + 5]
+	ld e, a
+	ld a, [wBuffer + 2]
+	ld h, a
+	ld a, e
+	sub h
+	ld e, a
+	ld a, [wBuffer + 4]
 	ld d, a
 	ld a, [wBuffer + 1]
-	ld e, a
+	ld h, a
+	ld a, d
+	sbc h
+	ld d, a
 
 	ld a, b
 	or c
 	jr z, .empty
 	predef HPBarLength
 	jr .restoreAndDraw
+
+.invalidRange
 .empty
 	ld e, 0
 .restoreAndDraw
