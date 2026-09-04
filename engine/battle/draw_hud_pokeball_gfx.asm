@@ -130,122 +130,22 @@ PlacePlayerHUDTiles:
 	call PlaceHUDTiles
 	jp DrawPlayerExpBar
 
-; Pokemon Yellow Complete: show the active Pokemon's progress toward its
-; next level as a six-tile (48 pixel) bar in the bottom edge of its HUD.
-; The existing HP-bar fill tiles are reused so the addition matches Gen 1.
+; Pokemon Yellow Complete EXP bar visibility test.
+; Draw a fixed six-tile empty bar first, without any EXP calculations.
+; Once this is confirmed visible in battle, this routine can be connected
+; back to the active Pokemon's real experience progress.
 DrawPlayerExpBar:
 	ld a, [wBattleMonSpecies]
 	and a
 	ret z
-	ld a, [wBattleMonLevel]
-	and a
-	ret z
-	cp MAX_LEVEL
-	jr z, .maxLevel
 
-	ld a, [wCurSpecies]
-	push af
-	ld a, [wBattleMonSpecies]
-	ld [wCurSpecies], a
-	call GetMonHeader
-
-	; Save cumulative EXP required for the current level.
-	ld a, [wBattleMonLevel]
-	ld d, a
-	callfar CalcExperience
-	ld hl, wBuffer
-	ldh a, [hExperience]
-	ld [hli], a
-	ldh a, [hExperience + 1]
-	ld [hli], a
-	ldh a, [hExperience + 2]
-	ld [hl], a
-
-	; Copy active party Pokemon's cumulative EXP into scratch space.
-	ld a, [wPlayerMonNumber]
-	ld hl, wPartyMon1
-	ld bc, PARTYMON_STRUCT_LENGTH
-	call AddNTimes
-	ld bc, MON_EXP
-	add hl, bc
-	ld de, wBuffer + 3
-	ld a, [hli]
-	ld [de], a
-	inc de
-	ld a, [hli]
-	ld [de], a
-	inc de
-	ld a, [hl]
-	ld [de], a
-
-	; BC = progress made since the current level threshold.
-	ld hl, wBuffer + 2
-	ld a, [wBuffer + 5]
-	sub [hl]
-	ld c, a
-	dec hl
-	ld a, [wBuffer + 4]
-	sbc [hl]
-	ld b, a
-
-	; DE = EXP interval between this level and the next.
-	ld a, [wBattleMonLevel]
-	inc a
-	ld d, a
-	callfar CalcExperience
-	ld hl, wBuffer + 2
-	ldh a, [hExperience + 2]
-	sub [hl]
-	ld e, a
-	dec hl
-	ldh a, [hExperience + 1]
-	sbc [hl]
-	ld d, a
-
-	ld a, b
-	or c
-	jr z, .empty
-	predef HPBarLength ; BC / DE scaled to 48 pixels, result in E
-	jr .restoreAndDraw
-.empty
-	ld e, 0
-.restoreAndDraw
-	pop af
-	ld [wCurSpecies], a
-	and a
-	call nz, GetMonHeader
-	jr .draw
-
-.maxLevel
-	ld e, 48
-.draw
 	hlcoord 11, 11
-	ld d, 6
-	ld a, e
-.drawFullTiles
-	cp 8
-	jr c, .partialTile
-	sub 8
-	ld [hl], $6b ; full HP-bar segment
-	inc hl
-	dec d
-	jr nz, .drawFullTiles
-	ret
-.partialTile
-	and a
-	jr z, .emptyTiles
-	add $63 ; $64-$6a are 1-7 pixel HP-bar segments
-	ld [hli], a
-	dec d
-.emptyTiles
-	ld a, d
-	and a
-	ret z
+	ld b, 6
 	ld a, $63 ; empty HP-bar segment
-.emptyTileLoop
+.loop
 	ld [hli], a
-	dec d
-	jr nz, .emptyTileLoop
+	dec b
+	jr nz, .loop
 	ret
 
 PlayerBattleHUDGraphicsTiles:
