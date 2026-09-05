@@ -5,13 +5,14 @@ EXPERIENCE = Path("engine/battle/experience.asm")
 
 OLD_BLOCK = '''\tld hl, GainedText\n\tcall PrintText\n\n\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, immediately redraw its EXP progress bar.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n'''
 
-ANIMATED_BLOCK = '''\t; Pokemon Yellow Complete: animate the active Pokemon's EXP bar before\n\t; printing the gained-EXP message. The animation advances one pixel per\n\t; frame from the bar currently on screen to the newly calculated value.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, AnimatePlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
+ANIMATED_BLOCK = '''\t; Pokemon Yellow Complete: animate the active Pokemon's EXP bar before\n\t; printing the gained-EXP message.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, AnimatePlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
 
 ANIMATION_ROUTINES = r'''
 
 ; Pokemon Yellow Complete - gradual EXP bar animation.
-; Reads the bar that is already visible, asks DrawPlayerExpBar for the new
-; target, restores the old value, then advances one pixel per frame.
+; The Gen 1 automatic BG transfer can update the tilemap in chunks across
+; VBlanks. Keep auto transfer enabled and wait three VBlanks for each pixel so
+; every visible step reaches VRAM instead of only appearing on the next HUD.
 AnimatePlayerExpBar:
 	push af
 	push bc
@@ -21,25 +22,26 @@ AnimatePlayerExpBar:
 	call ReadPlayerExpBarPixels
 	ld c, e ; C = old on-screen pixel length
 
-	; Draw once to discover the target produced by the real EXP calculation.
+	; Calculate/draw the new target without waiting for a frame, then read it
+	; back from the tilemap before restoring the old visible value.
 	call DrawPlayerExpBar
 	call ReadPlayerExpBarPixels
 	ld b, e ; B = new target pixel length
 
-	; If the new calculation wrapped below the old bar, EXP crossed a level
-	; boundary. Fill to the end first; the normal level-up HUD redraw will then
-	; show the leftover EXP for the new level.
+	; EXP crossing a level boundary makes DrawPlayerExpBar return an empty bar
+	; until the battle-mon level is updated. In that case animate to full first.
 	ld a, b
 	cp c
 	jr nc, .targetReady
 	ld b, 48
 .targetReady
 
-	; Put the old bar back before starting the visible animation.
+	; Restore the old bar and explicitly enable automatic BG-map transfers.
 	ld e, c
 	call DrawPlayerExpBarPixels
 	ld a, 1
 	ldh [hAutoBGTransferEnabled], a
+	call Delay3
 
 .animateLoop
 	ld a, e
@@ -49,19 +51,22 @@ AnimatePlayerExpBar:
 	push bc
 	push de
 	call DrawPlayerExpBarPixels
-	call DelayFrame
+	; Three VBlanks guarantee the HUD row is transferred before next pixel.
+	call Delay3
 	pop de
 	pop bc
 	jr .animateLoop
 
 .done
+	; Leave the final value on screen long enough for the last transfer too.
+	call Delay3
 	pop hl
 	pop de
 	pop bc
 	pop af
 	ret
 
-; Return the currently displayed 6-tile EXP bar length in E (0..48 pixels).
+; Return the current 6-tile EXP bar length in E (0..48 pixels).
 ReadPlayerExpBarPixels:
 	hlcoord 11, 11
 	ld b, 6
@@ -127,14 +132,22 @@ def main():
     if "DrawPlayerExpBar:" not in hud:
         raise SystemExit("DrawPlayerExpBar nao encontrado no arquivo do HUD.")
 
-    if "AnimatePlayerExpBar:" not in hud:
+    # CI builds start from clean source, but keep this idempotent in case the
+    # workspace already contains the previous one-frame animation.
+    start = hud.find("\n; Pokemon Yellow Complete - gradual EXP bar animation.\n")
+    marker = hud.find(ROUTINE_MARKER)
+    if start != -1 and marker != -1 and start < marker:
+        hud = hud[:start] + ANIMATION_ROUTINES + hud[marker:]
+        HUD.write_text(hud, encoding="utf-8")
+        print("Rotina gradual atualizada para transferir cada passo para a tela.")
+    elif "AnimatePlayerExpBar:" not in hud:
         if ROUTINE_MARKER not in hud:
             raise SystemExit("Ponto de insercao da animacao nao encontrado no HUD.")
         hud = hud.replace(ROUTINE_MARKER, ANIMATION_ROUTINES + ROUTINE_MARKER, 1)
         HUD.write_text(hud, encoding="utf-8")
         print("Rotina de animacao gradual da barra de EXP aplicada.")
     else:
-        print("Rotina de animacao gradual da barra de EXP ja aplicada.")
+        print("Rotina de animacao gradual ja esta atualizada.")
 
     if ANIMATED_BLOCK in experience:
         print("Hook animado da barra de EXP ja aplicado.")
@@ -145,7 +158,7 @@ def main():
     else:
         raise SystemExit("Nao encontrei o bloco esperado de atualizacao da barra de EXP.")
 
-    print("A barra avanca um pixel por frame ate o novo progresso.")
+    print("Cada pixel da barra agora permanece por tres VBlanks para ficar visivel.")
 
 
 if __name__ == "__main__":
