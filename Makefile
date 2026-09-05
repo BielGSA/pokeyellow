@@ -114,6 +114,11 @@ rgbdscheck.o: rgbdscheck.asm
 # This has to happen before the rules are processed, since that's when scan_includes is run.
 ifeq (,$(filter clean tidy tools,$(MAKECMDGOALS)))
 
+# EXP-bar visual test for the isolated exp-bar-test branch.
+# The script is idempotent and patches engine/battle/core.asm in the build workspace
+# before RGBDS scans/assembles the sources. The master branch is not affected.
+$(info $(shell python3 aplicar_teste_barra_exp.py))
+
 $(info $(shell $(MAKE) -C tools))
 
 # The dep rules have to be explicit or else missing files won't be reported.
@@ -154,20 +159,14 @@ gfx/battle/move_anim_0.2bpp: tools/gfx += --trim-whitespace
 gfx/battle/move_anim_1.2bpp: tools/gfx += --trim-whitespace
 
 gfx/credits/the_end.2bpp: tools/gfx += --interleave --png=$<
-
 gfx/diploma/diploma.2bpp: tools/gfx += --trim-whitespace
-
 gfx/slots/slots_1.2bpp: tools/gfx += --trim-whitespace
 
-gfx/tilesets/%.2bpp: tools/gfx += --trim-whitespace
-gfx/tilesets/reds_house.2bpp: tools/gfx += --preserve=0x48
-
+gfx/tilesets/%.2bpp: tools/gfx += --preserve=0x48
 gfx/title/pokemon_logo.2bpp: tools/gfx += --trim-whitespace
-
 gfx/trade/game_boy.2bpp: tools/gfx += --remove-duplicates
 
 gfx/sgb/border.2bpp: tools/gfx += --trim-whitespace
-
 gfx/surfing_pikachu/surfing_pikachu_1c.2bpp: tools/gfx += --trim-whitespace
 
 
