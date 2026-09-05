@@ -7,7 +7,7 @@ WRAM = Path("ram/wram.asm")
 OLD_BLOCK = '''\tld hl, GainedText\n\tcall PrintText\n\n\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, immediately redraw its EXP progress bar.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n'''
 
 ADD_EXP_MARKER = '''; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
-ADD_EXP_REPLACEMENT = '''; Pokemon Yellow Complete: save the active Pokemon's EXP-bar position BEFORE\n; cumulative EXP changes. Preserve HL because it points into the current\n; party-mon structure. The battle-core routine recalculates the bar from the\n; real current EXP instead of trusting whatever tiles happen to be on screen.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipCaptureOldExpBar\n\tpush hl\n\tld hl, CapturePlayerExpBarPixels\n\tcall CallBattleCore\n\tpop hl\n.skipCaptureOldExpBar\n\n; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
+ADD_EXP_REPLACEMENT = '''; Pokemon Yellow Complete: save the active Pokemon's EXP-bar position BEFORE\n; cumulative EXP changes. DrawPlayerExpBar calls CalcExperience, which reuses\n; the arithmetic scratch area, including hQuotient. Preserve the two quotient\n; bytes that contain the actual EXP reward so the visual bar code can never\n; change the amount of EXP awarded.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipCaptureOldExpBar\n\tldh a, [hQuotient + 2]\n\tpush af\n\tldh a, [hQuotient + 3]\n\tpush af\n\tpush hl\n\tld hl, CapturePlayerExpBarPixels\n\tcall CallBattleCore\n\tpop hl\n\tpop af\n\tldh [hQuotient + 3], a\n\tpop af\n\tldh [hQuotient + 2], a\n.skipCaptureOldExpBar\n\n; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
 
 ANIMATED_BLOCK = '''\t; Pokemon Yellow Complete: cumulative EXP is now updated, so animate the\n\t; active Pokemon from the saved old bar position to the new target.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, AnimatePlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
 
@@ -18,8 +18,8 @@ ANIMATION_ROUTINES = r'''
 
 ; Pokemon Yellow Complete - gradual EXP bar animation.
 ; Before EXP is added, rebuild the active bar from the Pokemon's real current
-; cumulative EXP, then save that pixel length. This avoids depending on stale
-; or overwritten HUD tiles between trainer/wild battles.
+; cumulative EXP, then save that pixel length. The caller preserves hQuotient
+; because CalcExperience uses the same arithmetic scratch memory.
 CapturePlayerExpBarPixels:
 	push af
 	push bc
@@ -148,14 +148,12 @@ def main():
     if "DrawPlayerExpBar:" not in hud:
         raise SystemExit("DrawPlayerExpBar nao encontrado no HUD.")
 
-    # Reserve one existing unnamed WRAM byte without changing any addresses.
     if "wExpBarOldPixels:: db" not in wram:
         if WRAM_OLD not in wram:
             raise SystemExit("Byte WRAM reservado esperado nao encontrado.")
         wram = wram.replace(WRAM_OLD, WRAM_NEW, 1)
         WRAM.write_text(wram, encoding="utf-8")
 
-    # Replace/insert animation routines in the build workspace.
     start = hud.find("\n; Pokemon Yellow Complete - gradual EXP bar animation.\n")
     marker = hud.find(ROUTINE_MARKER)
     if start != -1 and marker != -1 and start < marker:
@@ -166,20 +164,18 @@ def main():
         hud = hud.replace(ROUTINE_MARKER, ANIMATION_ROUTINES + ROUTINE_MARKER, 1)
     HUD.write_text(hud, encoding="utf-8")
 
-    # Move the EXP-bar capture to before the actual party EXP write.
     if ADD_EXP_REPLACEMENT not in experience:
         if ADD_EXP_MARKER not in experience:
             raise SystemExit("Ponto de escrita da EXP nao encontrado.")
         experience = experience.replace(ADD_EXP_MARKER, ADD_EXP_REPLACEMENT, 1)
 
-    # The clean branch has the original static refresh after GainedText.
     if ANIMATED_BLOCK not in experience:
         if OLD_BLOCK not in experience:
             raise SystemExit("Hook original da barra de EXP nao encontrado.")
         experience = experience.replace(OLD_BLOCK, ANIMATED_BLOCK, 1)
 
     EXPERIENCE.write_text(experience, encoding="utf-8")
-    print("EXP bar: old pixels recalculated from real current EXP before every gain; animation runs after write.")
+    print("EXP bar: preserves reward quotient, captures old real EXP, then animates after write.")
 
 
 if __name__ == "__main__":
