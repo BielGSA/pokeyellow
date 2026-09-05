@@ -5,7 +5,7 @@ EXPERIENCE = Path("engine/battle/experience.asm")
 
 OLD_BLOCK = '''\tld hl, GainedText\n\tcall PrintText\n\n\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, immediately redraw its EXP progress bar.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n'''
 
-NEW_BLOCK = '''\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, redraw its EXP progress bar BEFORE the gained-EXP\n\t; message. This gives the tilemap time to reach the screen while the message\n\t; is visible, instead of only becoming noticeable in the next battle.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
+FIXED_BLOCK = '''\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, rebuild the whole player HUD before printing the\n\t; gained-EXP message. DrawPlayerHUDAndHPBar re-enables automatic BG transfer,\n\t; so the new EXP bar reaches VRAM during this battle instead of waiting until\n\t; the next HUD setup.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerHUDAndHPBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
 
 
 def main():
@@ -20,12 +20,13 @@ def main():
     if "DrawPlayerExpBar:" not in hud:
         raise SystemExit("DrawPlayerExpBar nao encontrado no arquivo do HUD.")
 
-    if NEW_BLOCK in experience:
-        print("Atualizacao imediata da barra de EXP ja aplicada.")
+    if FIXED_BLOCK in experience:
+        print("Refresh visivel da barra de EXP ja aplicado.")
     elif OLD_BLOCK in experience:
-        experience = experience.replace(OLD_BLOCK, NEW_BLOCK, 1)
+        experience = experience.replace(OLD_BLOCK, FIXED_BLOCK, 1)
         EXPERIENCE.write_text(experience, encoding="utf-8")
-        print("Barra de EXP agora e redesenhada antes da mensagem de EXP ganha.")
+        print("HUD do jogador agora e redesenhado antes da mensagem de EXP.")
+        print("Transferencia do novo estado da barra para a tela sera feita na mesma batalha.")
     else:
         raise SystemExit("Nao encontrei o bloco esperado de atualizacao da barra de EXP.")
 
