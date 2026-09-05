@@ -3,17 +3,12 @@ from pathlib import Path
 HUD = Path("engine/battle/draw_hud_pokeball_gfx.asm")
 EXPERIENCE = Path("engine/battle/experience.asm")
 
+OLD_BLOCK = '''\tld hl, GainedText\n\tcall PrintText\n\n\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, immediately redraw its EXP progress bar.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n'''
+
+NEW_BLOCK = '''\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, redraw its EXP progress bar BEFORE the gained-EXP\n\t; message. This gives the tilemap time to reach the screen while the message\n\t; is visible, instead of only becoming noticeable in the next battle.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
+
 
 def main():
-    """Validate the EXP-bar integration without patching core.asm.
-
-    The branch already has the real DrawPlayerExpBar routine in
-    engine/battle/draw_hud_pokeball_gfx.asm and the EXP-gain refresh hook in
-    engine/battle/experience.asm.  An older version of this helper inserted a
-    second routine into core.asm, which caused RGBDS to report a duplicate
-    symbol.  Keeping this script as a validation step makes the Makefile safe
-    and idempotent while preserving the isolated exp-bar-test workflow.
-    """
     if not HUD.exists():
         raise SystemExit(f"Arquivo nao encontrado: {HUD}")
     if not EXPERIENCE.exists():
@@ -25,11 +20,16 @@ def main():
     if "DrawPlayerExpBar:" not in hud:
         raise SystemExit("DrawPlayerExpBar nao encontrado no arquivo do HUD.")
 
-    if "ld hl, DrawPlayerExpBar" not in experience:
-        raise SystemExit("Hook de atualizacao da barra apos ganho de EXP nao encontrado.")
+    if NEW_BLOCK in experience:
+        print("Atualizacao imediata da barra de EXP ja aplicada.")
+    elif OLD_BLOCK in experience:
+        experience = experience.replace(OLD_BLOCK, NEW_BLOCK, 1)
+        EXPERIENCE.write_text(experience, encoding="utf-8")
+        print("Barra de EXP agora e redesenhada antes da mensagem de EXP ganha.")
+    else:
+        raise SystemExit("Nao encontrei o bloco esperado de atualizacao da barra de EXP.")
 
-    print("Barra de EXP funcional encontrada no HUD; nenhum patch em core.asm necessario.")
-    print("Hook de atualizacao apos ganho de EXP confirmado.")
+    print("DrawPlayerExpBar confirmado no HUD.")
 
 
 if __name__ == "__main__":
