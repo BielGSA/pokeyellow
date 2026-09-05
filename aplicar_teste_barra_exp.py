@@ -7,7 +7,7 @@ WRAM = Path("ram/wram.asm")
 OLD_BLOCK = '''\tld hl, GainedText\n\tcall PrintText\n\n\t; Pokemon Yellow Complete: if the Pokemon that just received EXP is the\n\t; one currently in battle, immediately redraw its EXP progress bar.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, DrawPlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n'''
 
 ADD_EXP_MARKER = '''; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
-ADD_EXP_REPLACEMENT = '''; Pokemon Yellow Complete: save the visible EXP-bar position BEFORE the\n; cumulative EXP bytes are changed. Preserve HL because it points into the\n; current party-mon structure.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipCaptureOldExpBar\n\tpush hl\n\tld hl, CapturePlayerExpBarPixels\n\tcall CallBattleCore\n\tpop hl\n.skipCaptureOldExpBar\n\n; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
+ADD_EXP_REPLACEMENT = '''; Pokemon Yellow Complete: save the active Pokemon's EXP-bar position BEFORE\n; cumulative EXP changes. Preserve HL because it points into the current\n; party-mon structure. The battle-core routine recalculates the bar from the\n; real current EXP instead of trusting whatever tiles happen to be on screen.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipCaptureOldExpBar\n\tpush hl\n\tld hl, CapturePlayerExpBarPixels\n\tcall CallBattleCore\n\tpop hl\n.skipCaptureOldExpBar\n\n; add the gained exp to the party mon's exp\n\tld b, [hl]\n'''
 
 ANIMATED_BLOCK = '''\t; Pokemon Yellow Complete: cumulative EXP is now updated, so animate the\n\t; active Pokemon from the saved old bar position to the new target.\n\tld a, [wWhichPokemon]\n\tld b, a\n\tld a, [wPlayerMonNumber]\n\tcp b\n\tjr nz, .skipExpBarRefresh\n\tld hl, AnimatePlayerExpBar\n\tcall CallBattleCore\n.skipExpBarRefresh\n\n\tld hl, GainedText\n\tcall PrintText\n'''
 
@@ -17,12 +17,15 @@ WRAM_NEW = '''; the address of the menu cursor's current location within wTileMa
 ANIMATION_ROUTINES = r'''
 
 ; Pokemon Yellow Complete - gradual EXP bar animation.
-; Old pixels are stored in a dedicated WRAM byte before cumulative EXP changes.
+; Before EXP is added, rebuild the active bar from the Pokemon's real current
+; cumulative EXP, then save that pixel length. This avoids depending on stale
+; or overwritten HUD tiles between trainer/wild battles.
 CapturePlayerExpBarPixels:
 	push af
 	push bc
 	push de
 	push hl
+	call DrawPlayerExpBar
 	call ReadPlayerExpBarPixels
 	ld a, e
 	ld [wExpBarOldPixels], a
@@ -163,7 +166,7 @@ def main():
         hud = hud.replace(ROUTINE_MARKER, ANIMATION_ROUTINES + ROUTINE_MARKER, 1)
     HUD.write_text(hud, encoding="utf-8")
 
-    # Move the visible-bar capture to before the actual party EXP write.
+    # Move the EXP-bar capture to before the actual party EXP write.
     if ADD_EXP_REPLACEMENT not in experience:
         if ADD_EXP_MARKER not in experience:
             raise SystemExit("Ponto de escrita da EXP nao encontrado.")
@@ -176,7 +179,7 @@ def main():
         experience = experience.replace(OLD_BLOCK, ANIMATED_BLOCK, 1)
 
     EXPERIENCE.write_text(experience, encoding="utf-8")
-    print("EXP bar: old pixels saved in dedicated WRAM before EXP write; animation runs after write.")
+    print("EXP bar: old pixels recalculated from real current EXP before every gain; animation runs after write.")
 
 
 if __name__ == "__main__":
