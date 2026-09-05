@@ -3,44 +3,158 @@ from pathlib import Path
 CORE = Path("engine/battle/core.asm")
 
 CALL_MARKER = "\thlcoord 10, 9\n\tpredef DrawHP\n"
-CALL_PATCH = "\thlcoord 10, 9\n\tpredef DrawHP\n\tcall DrawEXPBarVisualTest\n"
+CALL_PATCH = "\thlcoord 10, 9\n\tpredef DrawHP\n\tcall DrawPlayerExpBar\n"
 
 ROUTINE_MARKER = "\nDrawEnemyHUDAndHPBar:\n"
 ROUTINE = r'''
 
-; Temporary visual-only EXP bar test.
-; This deliberately does NOT calculate or animate EXP yet.
-; It only verifies that row 11 of the player's HUD can be used safely.
-DrawEXPBarVisualTest:
+; Pokemon Yellow Complete - functional EXP progress bar test.
+; Draws an 8-segment bar using the active party mon's real EXP progress.
+; The visual tiles are still temporary (X = filled, - = empty); dedicated
+; pixel graphics and smooth animation come after this calculation is proven.
+DrawPlayerExpBar:
 	push hl
 	push de
 	push bc
 	push af
 
-	; Label at the left of the test bar.
-	hlcoord 9, 11
-	ld de, .label
-	call PlaceString
+	; Find the active party mon's 3-byte EXP field and save its low 16 bits.
+	; The EXP gained inside a single level is always below 65536, so subtracting
+	; the low words is sufficient even when the total EXP crosses a bank boundary.
+	ld hl, wPartyMon1 + MON_EXP + 1
+	ld a, [wPlayerMonNumber]
+	and a
+	jr z, .gotPartyMonExp
+	ld de, PARTYMON_STRUCT_LENGTH
+.findPartyMonExp
+	add hl, de
+	dec a
+	jr nz, .findPartyMonExp
+.gotPartyMonExp
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	push bc ; current total EXP low word
 
-	; Draw an 8-character placeholder bar.
-	; Once this survives battle HUD redraws, these characters will be
-	; replaced by dedicated 0..8 pixel EXP tiles and real EXP calculation.
-	hlcoord 12, 11
-	ld b, 8
+	; Load growth-rate data for the active species.
+	ld a, [wBattleMonSpecies2]
+	ld [wCurSpecies], a
+	call GetMonHeader
+
+	; Level 100 has no next-level threshold; show a full bar.
+	ld a, [wBattleMonLevel]
+	cp MAX_LEVEL
+	jr nc, .maxLevel
+
+	; EXP required at the start of the current level.
+	ld d, a
+	callfar CalcExperience
+	ldh a, [hExperience + 1]
+	ld b, a
+	ldh a, [hExperience + 2]
+	ld c, a
+	push bc ; base EXP low word
+
+	; EXP required for the next level.
+	ld a, [wBattleMonLevel]
+	inc a
+	ld d, a
+	callfar CalcExperience
+
+	; HL = base EXP low word.
+	pop hl
+
+	; DE = EXP needed in this level = next level threshold - base threshold.
+	ldh a, [hExperience + 2]
+	sub l
+	ld e, a
+	ldh a, [hExperience + 1]
+	sbc h
+	ld d, a
+
+	; BC = progress inside this level = current total EXP - base threshold.
+	pop bc
+	ld a, c
+	sub l
+	ld c, a
+	ld a, b
+	sbc h
+	ld b, a
+
+	; One visual segment represents approximately 1/8 of the level.
+	; DE = max(1, needed / 8).
+	srl d
+	rr e
+	srl d
+	rr e
+	srl d
+	rr e
+	ld a, d
+	or e
+	jr nz, .thresholdReady
+	inc e
+.thresholdReady
+
+	; Count how many whole segment thresholds fit in the current progress.
+	ld h, 0
+.countSegments
+	ld a, b
+	cp d
+	jr c, .segmentsReady
+	jr nz, .subtractThreshold
+	ld a, c
+	cp e
+	jr c, .segmentsReady
+.subtractThreshold
+	ld a, c
+	sub e
+	ld c, a
+	ld a, b
+	sbc d
+	ld b, a
+	inc h
+	ld a, h
+	cp 8
+	jr c, .countSegments
+.segmentsReady
+	ld d, h
+	jr .draw
+
+.maxLevel
+	pop bc ; discard saved current EXP
+	ld d, 8
+
+.draw
+	; Temporary visual representation: EXPXXXXXXXX / EXPXXXX---- etc.
+	hlcoord 9, 11
+	ld a, 'E'
+	ld [hli], a
+	ld a, 'X'
+	ld [hli], a
+	ld a, 'P'
+	ld [hli], a
+
+	ld c, d ; filled segments remaining
+	ld b, 8 ; total segments
+.drawLoop
+	ld a, c
+	and a
+	jr z, .emptySegment
+	ld a, 'X'
+	dec c
+	jr .putSegment
+.emptySegment
 	ld a, '-'
-.loop
+.putSegment
 	ld [hli], a
 	dec b
-	jr nz, .loop
+	jr nz, .drawLoop
 
 	pop af
 	pop bc
 	pop de
 	pop hl
 	ret
-
-.label
-	db "EXP@"
 '''
 
 
@@ -50,8 +164,8 @@ def main():
 
     text = CORE.read_text(encoding="utf-8")
 
-    if "DrawEXPBarVisualTest:" in text:
-        print("Teste visual da barra de EXP ja aplicado.")
+    if "DrawPlayerExpBar:" in text:
+        print("Barra funcional de EXP ja aplicada.")
         return
 
     if CALL_MARKER not in text:
@@ -64,8 +178,8 @@ def main():
 
     text = text.replace(ROUTINE_MARKER, ROUTINE + ROUTINE_MARKER, 1)
     CORE.write_text(text, encoding="utf-8")
-    print("Teste visual da barra de EXP aplicado em engine/battle/core.asm")
-    print("Proximo passo: executar make e testar uma batalha no emulador.")
+    print("Barra funcional de EXP aplicada em engine/battle/core.asm")
+    print("Ela agora calcula o progresso real do Pokemon ativo em 8 segmentos.")
 
 
 if __name__ == "__main__":
